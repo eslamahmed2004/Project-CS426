@@ -1,4 +1,4 @@
-package com.example.project_cs426.pages.start
+package com.example.project_cs426.pages.auth
 
 
 import androidx.compose.foundation.Image

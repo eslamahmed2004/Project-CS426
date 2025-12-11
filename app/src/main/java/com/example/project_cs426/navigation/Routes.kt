@@ -6,5 +6,12 @@ object Routes {
     const val login="login"
     const val  onbording="onBording"
     const val  location="location"
+    const val  home ="home"
+
+    const val signup="signup"
+
+    const val Terms="terms"
+
+    const val Privacy= "privacy"
 
 }

@@ -1,4 +1,4 @@
-package com.example.project_cs426.pages.location
+package com.example.project_cs426.pages.auth
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -37,9 +39,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.project_cs426.R
 import com.example.project_cs426.com.example.project_cs426.navigation.Routes
 
@@ -54,10 +58,13 @@ fun location(
     )
 ) {
     val bg = Color(0xFFF7F7F8)
+    val scrollState = rememberScrollState()
+
     Surface(modifier = Modifier.fillMaxSize(), color = bg) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(scrollState)
                 .padding(horizontal = 20.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -76,7 +83,7 @@ fun location(
                 Spacer(modifier = Modifier.weight(1f))
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(75.dp))
 
             Box(
                 modifier = Modifier
@@ -115,7 +122,7 @@ fun location(
                 lineHeight = 18.sp
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(100.dp))
 
             var selectedZone by remember { mutableStateOf(zones.first()) }
             SimpleDropdown(
@@ -206,4 +213,14 @@ private fun SimpleDropdown(
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LocationPreview() {
+    val navController = rememberNavController()
+
+    location(
+        navController = navController
+    )
 }

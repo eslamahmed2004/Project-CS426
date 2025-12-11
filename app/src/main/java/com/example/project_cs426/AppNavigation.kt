@@ -5,9 +5,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.project_cs426.com.example.project_cs426.navigation.Routes
-import com.example.project_cs426.pages.location.location
-import com.example.project_cs426.pages.onbording.onbording
-import com.example.project_cs426.pages.start.StartPage
+import com.example.project_cs426.pages.auth.StartPage
+import com.example.project_cs426.pages.auth.location
+import com.example.project_cs426.pages.auth.login
+import com.example.project_cs426.pages.auth.onbording
+import com.example.project_cs426.pages.auth.signup
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
@@ -25,6 +27,13 @@ fun AppNavigation(navController: NavHostController) {
         }
         composable(Routes.location) {
             location(navController)
+        }
+
+        composable(Routes.login) {
+            login(navController)
+        }
+        composable(Routes.signup) {
+            signup(navController)
         }
         }
 }

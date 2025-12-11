@@ -1,4 +1,4 @@
-package com.example.project_cs426.pages.onbording
+package com.example.project_cs426.pages.auth
 
 
 import androidx.compose.foundation.Image
@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -36,12 +38,15 @@ import com.example.project_cs426.com.example.project_cs426.navigation.Routes
 fun onbording(
     navController: NavHostController
 ) {
+    val scrollState = rememberScrollState()
+
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.onbording),
             contentDescription = "Background",
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize().verticalScroll(scrollState)
+
         )
 
         Box(
