@@ -14,4 +14,10 @@ object Routes {
 
     const val Privacy= "privacy"
 
+    const val Account = "account"
+
+    const val filters = "filters"
+
+    const val PRODUCT_DETAILS = "productDetails/{productId}"
+
 }
