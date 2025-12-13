@@ -9,8 +9,12 @@ object Routes {
     const val  home ="home"
 
     const val signup="signup"
-
+    const val favourite = "favourite"
+    const val checkout = "checkout"
+    const val error = "error"
+    const val success = "success"
     const val Terms="terms"
+    const val cart = "cart"
 
     const val Privacy= "privacy"
 

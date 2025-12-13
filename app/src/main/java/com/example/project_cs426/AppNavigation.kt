@@ -20,13 +20,20 @@ import com.example.project_cs426.screens.product.ProductDetailsScreen
 import com.example.project_cs426.viewmodel.AuthViewModel
 import com.example.project_cs426.viewmodel.ProductViewModel
 import com.example.project_cs426.viewmodel.UserViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.project_cs426.pages.cart.Cart
+import com.example.project_cs426.viewmodel.CartViewModel
+import com.example.project_cs426.pages.favourite.Favourite
+import com.example.project_cs426.pages.checkout.Checkout
+import com.example.project_cs426.pages.checkout.Success
+import com.example.project_cs426.pages.checkout.Error
+
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
 
     NavHost(
-        navController = navController,
-        startDestination = Routes.startPage
+        navController = navController, startDestination = Routes.startPage
     ) {
         composable(Routes.startPage) {
             StartPage(navController)
@@ -45,6 +52,35 @@ fun AppNavigation(navController: NavHostController) {
         composable(Routes.signup) {
             signup(navController)
         }
+        // Cart
+        composable(Routes.cart) {
+            val cartVm: CartViewModel = viewModel()
+            Cart(
+                cartViewModel = cartVm, onNavigateTo = { route -> navController.navigate(route) })
+        }
+
+// Favourite
+        composable(Routes.favourite) {
+            val cartVm: CartViewModel = viewModel()
+            Favourite(
+                cartViewModel = cartVm, onNavigateTo = { route -> navController.navigate(route) })
+        }
+
+// Checkout (modal-like page)
+        composable(Routes.checkout) {
+            val cartVm: CartViewModel = viewModel()
+            Checkout(navController = navController, totalPrice = cartVm.getTotalPrice())
+        }
+
+// PlaceOrder (success)
+        composable(Routes.success) {
+            Success(navController = navController)
+        }
+
+// Error screen
+        composable(Routes.error) {
+            Error(navController = navController)
+        }
 
 
 
@@ -54,18 +90,17 @@ fun AppNavigation(navController: NavHostController) {
 
             AccountScreen(
                 user = User(
-                    name = authViewModel.username.value,
-                    email = authViewModel.email.value,
-                    image = R.drawable.screenshot
-                ),
+                name = authViewModel.username.value,
+                email = authViewModel.email.value,
+                image = R.drawable.screenshot
+            ),
                 onOrdersClick = { navController.navigate("orders") },
                 onMyDetailsClick = { navController.navigate("myDetails") },
                 onAddressClick = { navController.navigate("address") },
                 onPaymentMethodsClick = { navController.navigate("paymentMethods") },
                 onPromoCodeClick = { navController.navigate("promoCode") },
                 onAboutClick = { navController.navigate("about") },
-                onLogoutClick = { /* مفيش حاجة */ }
-            )
+                onLogoutClick = { /* مفيش حاجة */ })
         }
 
 
@@ -73,16 +108,13 @@ fun AppNavigation(navController: NavHostController) {
 
 
         composable(Routes.filters) {
-            FiltersScreen(
-                onClose = { navController.popBackStack() },
-                onApply = { category, brand ->
-                    // لو عايز تستخدم قيم الفيلتر
-                    // println(category)
-                    // println(brand)
+            FiltersScreen(onClose = { navController.popBackStack() }, onApply = { category, brand ->
+                // لو عايز تستخدم قيم الفيلتر
+                // println(category)
+                // println(brand)
 
-                    navController.popBackStack()
-                }
-            )
+                navController.popBackStack()
+            })
         }
 
 
@@ -96,8 +128,7 @@ fun AppNavigation(navController: NavHostController) {
             LaunchedEffect(id) { viewModel.loadProduct(id) }
 
             ProductDetailsScreen(
-                navController = navController,
-                viewModel = viewModel
+                navController = navController, viewModel = viewModel
             )
         }
 
@@ -108,7 +139,6 @@ fun AppNavigation(navController: NavHostController) {
 //        composable("paymentMethods") { PaymentScreen() }
 //        composable("promoCode") { PromoScreen() }
 //        composable("about") { AboutScreen() }
-
 
 
     }
