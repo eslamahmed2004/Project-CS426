@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.project_cs426.R
-import com.example.project_cs426.com.example.project_cs426.navigation.Routes
+import com.example.project_cs426.navigation.Routes
 
 @Composable
 fun Success(navController: NavHostController) {
@@ -84,7 +84,7 @@ fun Success(navController: NavHostController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             TextButton(onClick = {
-                navController.navigate(Routes.startPage) {
+                navController.navigate(Routes.START) {
                     popUpTo(0)
                 }
             }) {

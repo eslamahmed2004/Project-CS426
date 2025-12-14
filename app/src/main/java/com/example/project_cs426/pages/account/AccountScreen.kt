@@ -1,4 +1,4 @@
-package com.example.ecommerce.screens.account
+package com.example.ecommerce.pages.account
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

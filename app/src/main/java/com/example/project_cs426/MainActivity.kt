@@ -7,54 +7,56 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.project_cs426.navigation.AppNavGraph
+import com.example.project_cs426.navigation.Routes
 import com.example.project_cs426.ui.theme.ProjectCS426Theme
+import com.example.project_cs426.navigation.BottomBar // لو عندك BottomBar
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        WindowInsetsControllerCompat(window, window.decorView).let { controller ->
-            controller.hide(WindowInsetsCompat.Type.statusBars())
-            controller.systemBarsBehavior =
-                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        }
         setContent {
             ProjectCS426Theme {
-                val navController = rememberNavController()
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
 
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Box(modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                    ) {
-                        AppNavigation(navController)
+                    val navController = rememberNavController()
+                    val navBackStackEntry = navController.currentBackStackEntryAsState()
+                    val currentRoute = navBackStackEntry.value?.destination?.route
+
+                    // الصفحات اللي مش عايزين فيها BottomBar
+                    val pagesWithoutBottomBar = listOf(
+                        Routes.START,
+                        Routes.ONBOARDING,
+                        Routes.LOCATION,
+                        Routes.LOGIN,
+                        Routes.REGISTER
+                    )
+
+                    Scaffold(
+                        containerColor = Color.White,
+                        bottomBar = {
+                            if (currentRoute !in pagesWithoutBottomBar) {
+                                BottomBar(navController)
+                            }
+                        }
+                    ) { padding ->
+                        Box(Modifier
+                            .fillMaxSize().padding(padding)
+                        ) {
+                            AppNavGraph(navController)
+                        }
                     }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ProjectCS426Theme {
-        Greeting("Android")
     }
 }

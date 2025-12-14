@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.project_cs426.com.example.project_cs426.navigation.Routes
+import com.example.project_cs426.navigation.Routes
 
 @Composable
 fun Checkout(navController: NavHostController, totalPrice: Double) {
@@ -95,7 +95,7 @@ fun Checkout(navController: NavHostController, totalPrice: Double) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = {  navController.navigate(Routes.home) },
+                onClick = {  navController.navigate(Routes.HOME) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),

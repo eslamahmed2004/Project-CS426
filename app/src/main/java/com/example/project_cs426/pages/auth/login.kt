@@ -46,7 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.project_cs426.R
-import com.example.project_cs426.com.example.project_cs426.navigation.Routes
+import com.example.project_cs426.navigation.Routes
+import com.example.project_cs426.ui.theme.PrimaryGreen
 import com.example.project_cs426.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,7 +58,6 @@ fun login(
     viewModel: AuthViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
     val bg = Color.White
-    val green = Color(0xFF53B175)
     val scrollState = rememberScrollState()
 
 
@@ -122,7 +122,7 @@ fun login(
                     focusedPlaceholderColor = Color(0xFFAAAAAA),
                     unfocusedPlaceholderColor = Color(0xFFAAAAAA),
 
-                    cursorColor = Color(0xFF53B175)
+                    cursorColor = PrimaryGreen
                 ),
 
                 keyboardOptions = KeyboardOptions(
@@ -164,7 +164,7 @@ fun login(
                     focusedPlaceholderColor = Color(0xFFAAAAAA),
                     unfocusedPlaceholderColor = Color(0xFFAAAAAA),
 
-                    cursorColor = Color(0xFF53B175)
+                    cursorColor = PrimaryGreen
                 ),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
@@ -187,7 +187,7 @@ fun login(
             Button(
                 onClick = {
                     viewModel.login(
-                        onSuccess = { navController.navigate(Routes.home) },
+                        onSuccess = { navController.navigate(Routes.HOME) },
                         onError = { msg ->
                             viewModel.errorMessage.value = msg
                         }
@@ -197,7 +197,7 @@ fun login(
                     .fillMaxWidth()
                     .height(56.dp)
                     .shadow(4.dp, RoundedCornerShape(16.dp)),
-                colors = ButtonDefaults.buttonColors(containerColor = green),
+                colors = ButtonDefaults.buttonColors(PrimaryGreen),
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text(text = "Log In", color = Color.White, fontSize = 16.sp)
@@ -218,9 +218,9 @@ fun login(
                 Text(text = "Don't have an account? ", color = Color(0xFF666666),)
                 Text(
                     text = "Signup",
-                    color = green,
+                    color = PrimaryGreen,
                     modifier = Modifier.clickable {
-                        navController?.navigate(Routes.signup)
+                        navController?.navigate(Routes.REGISTER)
                     }
                 )
             }

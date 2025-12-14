@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.project_cs426.R
-import com.example.project_cs426.com.example.project_cs426.navigation.Routes
+import com.example.project_cs426.navigation.Routes
 import com.example.project_cs426.model.CartItem
 import com.example.project_cs426.viewmodel.CartViewModel
 
@@ -59,7 +59,6 @@ fun Cart(
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.White)
             )
         },
-        bottomBar = { CartNavigationBar(onNavigateTo) },
         containerColor = Color.White
     ) { innerPadding ->
         Column(
@@ -101,7 +100,7 @@ fun Cart(
             ) {
 
                 Button(
-                    onClick = { onNavigateTo(Routes.checkout) },
+                    onClick = { onNavigateTo(Routes.CHECKOUT) },
                     modifier = Modifier
                         .weight(1f)
                         .height(56.dp),
@@ -135,66 +134,6 @@ fun Cart(
                 }
             }
         }
-    }
-}
-@Composable
-fun CartNavigationBar(
-    onNavigateTo: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    height: Dp = 64.dp
-) {
-    var selectedIndex by remember { mutableStateOf(2) } // default to Cart index
-
-    NavigationBar(modifier = modifier.height(height)) {
-        NavigationBarItem(
-            selected = selectedIndex == 0,
-            onClick = {
-                selectedIndex = 0
-                onNavigateTo(Routes.home)        // change if you use different route names
-            },
-            icon = { androidx.compose.material3.Icon(Icons.Default.Home, contentDescription = "Home") },
-            label = { Text("Home") }
-        )
-
-        NavigationBarItem(
-            selected = selectedIndex == 1,
-            onClick = {
-                selectedIndex = 1
-                onNavigateTo(Routes.favourite)   // adjust route name if needed
-            },
-            icon = { androidx.compose.material3.Icon(Icons.Default.Favorite, contentDescription = "Favorites") },
-            label = { Text("Favorites") }
-        )
-
-        NavigationBarItem(
-            selected = selectedIndex == 2,
-            onClick = {
-                selectedIndex = 2
-                onNavigateTo(Routes.cart)
-            },
-            icon = { androidx.compose.material3.Icon(Icons.Default.ShoppingCart, contentDescription = "Cart") },
-            label = { Text("Cart") }
-        )
-
-        NavigationBarItem(
-            selected = selectedIndex == 3,
-            onClick = {
-                selectedIndex = 3
-                onNavigateTo(Routes.PRODUCT_DETAILS)     // adjust if you have a different name (e.g. Routes.orderHistory)
-            },
-            icon = { androidx.compose.material3.Icon(Icons.Default.List, contentDescription = "Orders") },
-            label = { Text("Orders") }
-        )
-
-        NavigationBarItem(
-            selected = selectedIndex == 4,
-            onClick = {
-                selectedIndex = 4
-                onNavigateTo(Routes.Account)    // adjust if you use a different route name
-            },
-            icon = { androidx.compose.material3.Icon(Icons.Default.Person, contentDescription = "Profile") },
-            label = { Text("Profile") }
-        )
     }
 }
 @Composable
