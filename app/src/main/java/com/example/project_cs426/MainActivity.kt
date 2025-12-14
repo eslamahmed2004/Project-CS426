@@ -13,17 +13,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.project_cs426.navigation.AppNavGraph
+import com.example.project_cs426.navigation.BottomBar
 import com.example.project_cs426.navigation.Routes
 import com.example.project_cs426.ui.theme.ProjectCS426Theme
-import com.example.project_cs426.navigation.BottomBar // لو عندك BottomBar
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowInsetsControllerCompat(window, window.decorView).let { controller ->
+            controller.hide(WindowInsetsCompat.Type.statusBars())
+            controller.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
         setContent {
             ProjectCS426Theme {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
