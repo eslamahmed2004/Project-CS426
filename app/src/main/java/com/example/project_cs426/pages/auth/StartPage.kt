@@ -25,15 +25,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.project_cs426.R
-import com.example.project_cs426.com.example.project_cs426.navigation.Routes
+import com.example.project_cs426.navigation.Routes
 import kotlinx.coroutines.delay
 
 @Composable
 fun StartPage(navController: NavHostController) {
     LaunchedEffect(Unit) {
         delay(2000)
-        navController.navigate(Routes.onbording) {
-            popUpTo(Routes.startPage) { inclusive = true }
+        navController.navigate(Routes.ONBOARDING) {
+            popUpTo(Routes.START) { inclusive = true }
         }
     }
     val bg = Color(0xFF53B175)

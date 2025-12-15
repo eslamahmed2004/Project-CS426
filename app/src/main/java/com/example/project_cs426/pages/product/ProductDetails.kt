@@ -1,4 +1,4 @@
-package com.example.project_cs426.screens.product
+package com.example.project_cs426.pages.product
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

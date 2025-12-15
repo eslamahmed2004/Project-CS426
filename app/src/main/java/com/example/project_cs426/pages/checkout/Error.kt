@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.project_cs426.R
-import com.example.project_cs426.com.example.project_cs426.navigation.Routes
 
 @Composable
 fun Error(
@@ -98,7 +97,6 @@ fun Error(
 
                 TextButton(
                     onClick = {
-                        navController.navigate(Routes.startPage) {
                             popUpTo(0)
                         }
                     }
