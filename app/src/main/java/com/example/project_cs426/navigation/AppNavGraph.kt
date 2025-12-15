@@ -1,6 +1,7 @@
 package com.example.project_cs426.navigation
 
 import androidx.compose.runtime.Composable
+import com.example.project_cs426.com.example.project_cs426.navigation.Routes
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -27,21 +28,21 @@ fun AppNavGraph(navController: NavHostController) {
 
     NavHost(
         navController = navController,
-        startDestination = Routes.START
+        startDestination = Routes.startPage
     ) {
 
-        composable(Routes.START) { StartPage(navController) }
-        composable(Routes.ONBOARDING) { onbording(navController) }
-        composable(Routes.LOCATION) { location(navController) }
-        composable(Routes.LOGIN) { login(navController) }
-        composable(Routes.REGISTER) { register(navController) }
+        composable(Routes.startPage) { StartPage(navController) }
+        composable(Routes.onbording) { onbording(navController) }
+        composable(Routes.location) { location(navController) }
+        composable(Routes.login) { login(navController) }
+        composable(Routes.Register) { register(navController) }
 
 
-        composable(Routes.HOME) {
+        composable(Routes.home {
             HomeScreen(navController = navController)
         }
 
-        composable(Routes.EXPLORE) {
+        composable(Routes.Explorer) {
             Explore(navController = navController)
         }
 
@@ -76,27 +77,27 @@ fun AppNavGraph(navController: NavHostController) {
         }
 
 
-        composable(Routes.CART) {
+        composable(Routes.cart) {
             val cartVm: CartViewModel = viewModel()
             Cart(cartVm) { navController.navigate(it) }
         }
 
-        composable(Routes.FAVORITE) {
+        composable(Routes.favourite) {
             val cartVm: CartViewModel = viewModel()
             Favourite(cartVm) { navController.navigate(it) }
         }
 
 
-        composable(Routes.CHECKOUT) {
+        composable(Routes.checkout) {
             val cartVm: CartViewModel = viewModel()
             Checkout(navController, cartVm.getTotalPrice())
         }
 
-        composable(Routes.SUCCESS) { Success(navController) }
-        composable(Routes.ERROR) { Error(navController) }
+        composable(Routes.success) { Success(navController) }
+        composable(Routes.error) { Error(navController) }
 
 
-        composable(Routes.ACCOUNT) {
+        composable(Routes.Account) {
             val authVm: AuthViewModel = viewModel()
 
             AccountScreen(

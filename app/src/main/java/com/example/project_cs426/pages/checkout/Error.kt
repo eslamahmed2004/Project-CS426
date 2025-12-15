@@ -1,23 +1,24 @@
 package com.example.project_cs426.pages.checkout
 
 import androidx.compose.foundation.Image
+import com.example.project_cs426.com.example.project_cs426.navigation.Routes
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.project_cs426.R
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun Error(
@@ -39,7 +40,7 @@ fun Error(
             ) {
 
                 Image(
-                    painter = painterResource(id = R.drawable.error), // add this drawable
+                    painter = painterResource(id = R.drawable.error),
                     contentDescription = "Order Failed",
                     modifier = Modifier
                         .size(152.dp)
@@ -51,8 +52,7 @@ fun Error(
                 Text(
                     text = "Oops! Order Failed",
                     style = MaterialTheme.typography.headlineSmall.copy(
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontSize = 22.sp
                     ),
                     modifier = Modifier.padding(horizontal = 8.dp)
                 )
@@ -76,19 +76,17 @@ fun Error(
                 Button(
                     onClick = {
                         if (onRetry != null) onRetry()
-                        else {
-                            navController.popBackStack()
-                        }
+                        else navController.popBackStack()
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.ui.graphics.Color(0xFFC9E5D3))
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC9E5D3))
                 ) {
                     Text(
                         text = "Please Try Again",
-                        color = androidx.compose.ui.graphics.Color.Black,
+                        color = Color.Black,
                         fontSize = 16.sp
                     )
                 }
@@ -97,13 +95,15 @@ fun Error(
 
                 TextButton(
                     onClick = {
-                            popUpTo(0)
+                        navController.popBackStack()
+                        navController.navigate(Routes.startPage) {
+                            launchSingleTop = true
                         }
                     }
                 ) {
                     Text(
                         text = "Back to home",
-                        color = androidx.compose.ui.graphics.Color(0xFF333333),
+                        color = Color(0xFF333333),
                         fontSize = 14.sp
                     )
                 }

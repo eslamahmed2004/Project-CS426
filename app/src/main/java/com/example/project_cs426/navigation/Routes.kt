@@ -7,7 +7,12 @@ object Routes {
     const val  onbording="onBording"
     const val  location="location"
     const val  home ="home"
+    const val cart = "cart"
+    const val checkout = "checkout"
+    const val success = "success"
+    const val error = "error"
 
+    const val favourite = "favourite"
     const val signup="signup"
 
     const val Terms="terms"
@@ -15,6 +20,8 @@ object Routes {
     const val Privacy= "privacy"
 
     const val Account = "account"
+    const val   Explorer = "explorer"
+    const val   Register = "register"
 
     const val filters = "filters"
 

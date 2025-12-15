@@ -16,6 +16,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.project_cs426.R
+import com.example.project_cs426.com.example.project_cs426.navigation.Routes
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun Success(navController: NavHostController) {
@@ -68,24 +70,34 @@ fun Success(navController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
+            // Track Order — currently navigates to a placeholder route "track_order".
+            // Replace "track_order" with your actual route when you add that screen.
             Button(
                 onClick = {
-                    // TODO: add TrackOrder screen or flow
+                    // TODO: replace with actual tracking route if exists
+                    navController.navigate("track_order") {
+                        // optional: avoid multiple copies on backstack
+                        launchSingleTop = true
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(46.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.ui.graphics.Color(0xFF59B379))
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF59B379))
             ) {
-                Text("Track Order", color = androidx.compose.ui.graphics.Color.White, fontSize = 16.sp)
+                Text("Track Order", color = Color.White, fontSize = 16.sp)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            TextButton(onClick = {
-                    popUpTo(0)
+            // Back to home — navigate to start page and clear back stack
+            TextButton(
+                onClick = {
+                    navController.navigate(Routes.startPage) {
+                        popUpTo(Routes.startPage) { inclusive = true }
+                    }
                 }
-            }) {
+            ) {
                 Text("Back to home")
             }
         }

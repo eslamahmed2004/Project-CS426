@@ -4,7 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.project_cs426.com.example.project_cs426.navigation.Routes
 
 @Composable
 fun Checkout(navController: NavHostController, totalPrice: Double) {
@@ -94,6 +95,12 @@ fun Checkout(navController: NavHostController, totalPrice: Double) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
+                onClick = {
+                    // Navigate to place order (success) screen
+                    navController.navigate(Routes.success) {
+                        launchSingleTop = true
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -138,7 +145,7 @@ private fun RowItem(label: String, value: String, showChevron: Boolean = true) {
             if (showChevron) {
                 Spacer(modifier = Modifier.width(8.dp))
                 Icon(
-                    imageVector = Icons.Filled.ChevronRight,
+                    imageVector = Icons.Filled.ArrowForward,
                     contentDescription = null,
                     tint = Color(0xFF181725)
                 )

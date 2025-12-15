@@ -8,25 +8,29 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.ecommerce.screens.account.AccountScreen
+import com.example.ecommerce.pages.account.AccountScreen
 import com.example.project_cs426.com.example.project_cs426.navigation.Routes
 import com.example.project_cs426.model.User
 import com.example.project_cs426.pages.auth.StartPage
 import com.example.project_cs426.pages.auth.location
 import com.example.project_cs426.pages.auth.login
 import com.example.project_cs426.pages.auth.onbording
-import com.example.project_cs426.pages.auth.signup
-import com.example.project_cs426.screens.product.ProductDetailsScreen
+import com.example.project_cs426.pages.auth.register
+import com.example.project_cs426.pages.cart.Cart
+import com.example.project_cs426.pages.checkout.Checkout
+import com.example.project_cs426.pages.checkout.Error
+import com.example.project_cs426.pages.checkout.Success
+import com.example.project_cs426.pages.product.ProductDetailsScreen
 import com.example.project_cs426.viewmodel.AuthViewModel
+import com.example.project_cs426.viewmodel.CartViewModel
 import com.example.project_cs426.viewmodel.ProductViewModel
 import com.example.project_cs426.viewmodel.UserViewModel
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
-
+    val cartViewModel: CartViewModel = viewModel()
     NavHost(
-        navController = navController,
-        startDestination = Routes.startPage
+        navController = navController, startDestination = Routes.startPage
     ) {
         composable(Routes.startPage) {
             StartPage(navController)
@@ -43,7 +47,7 @@ fun AppNavigation(navController: NavHostController) {
             login(navController)
         }
         composable(Routes.signup) {
-            signup(navController)
+            register(navController)
         }
 
 
@@ -54,52 +58,45 @@ fun AppNavigation(navController: NavHostController) {
 
             AccountScreen(
                 user = User(
-                    name = authViewModel.username.value,
-                    email = authViewModel.email.value,
-                    image = R.drawable.screenshot
-                ),
+                name = authViewModel.username.value,
+                email = authViewModel.email.value,
+                image = R.drawable.screenshot
+            ),
                 onOrdersClick = { navController.navigate("orders") },
                 onMyDetailsClick = { navController.navigate("myDetails") },
                 onAddressClick = { navController.navigate("address") },
                 onPaymentMethodsClick = { navController.navigate("paymentMethods") },
                 onPromoCodeClick = { navController.navigate("promoCode") },
                 onAboutClick = { navController.navigate("about") },
-                onLogoutClick = { /* مفيش حاجة */ }
+                onLogoutClick = { /* مفيش حاجة */ })
+        }
+        composable(Routes.cart) {
+            Cart(
+                cartViewModel = cartViewModel, onNavigateTo = { route ->
+                    navController.navigate(route)
+                })
+        }
+
+        /* ================= Checkout (Bottom Sheet UI) ================= */
+        composable(Routes.checkout) {
+            Checkout(
+                navController = navController, totalPrice = cartViewModel.getTotalPrice()
             )
         }
 
+        /* ================= Success / Place Order ================= */
+        composable(Routes.success) {
+            Success(navController = navController)
+        }
 
-
-
-
-        composable(Routes.filters) {
-            FiltersScreen(
-                onClose = { navController.popBackStack() },
-                onApply = { category, brand ->
-                    // لو عايز تستخدم قيم الفيلتر
-                    // println(category)
-                    // println(brand)
-
+        /* ================= Error ================= */
+        composable(Routes.error) {
+            Error(
+                navController = navController, onRetry = {
                     navController.popBackStack()
-                }
-            )
+                })
         }
 
-
-        composable(
-            route = "productDetails/{productId}",
-            arguments = listOf(navArgument("productId") { type = NavType.IntType })
-        ) { backStackEntry ->
-            val viewModel: ProductViewModel = viewModel()
-            val id = backStackEntry.arguments?.getInt("productId") ?: 0
-
-            LaunchedEffect(id) { viewModel.loadProduct(id) }
-
-            ProductDetailsScreen(
-                navController = navController,
-                viewModel = viewModel
-            )
-        }
 
 //
 //        composable("orders") { OrdersScreen() }
@@ -108,7 +105,6 @@ fun AppNavigation(navController: NavHostController) {
 //        composable("paymentMethods") { PaymentScreen() }
 //        composable("promoCode") { PromoScreen() }
 //        composable("about") { AboutScreen() }
-
 
 
     }

@@ -19,11 +19,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.project_cs426.R
+import com.example.project_cs426.com.example.project_cs426.navigation.Routes
 import com.example.project_cs426.model.CartItem
 import com.example.project_cs426.viewmodel.CartViewModel
 
@@ -58,6 +60,7 @@ fun Cart(
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.White)
             )
         },
+        bottomBar = { CartNavigationBar(onNavigateTo) },
         containerColor = Color.White
     ) { innerPadding ->
         Column(
@@ -99,6 +102,7 @@ fun Cart(
             ) {
 
                 Button(
+                    onClick = { onNavigateTo(Routes.checkout) },
                     modifier = Modifier
                         .weight(1f)
                         .height(56.dp),
@@ -134,6 +138,43 @@ fun Cart(
         }
     }
 }
+
+@Composable
+fun CartNavigationBar(onNavigateTo: (String) -> Unit) {
+    NavigationBar(containerColor = androidx.compose.ui.graphics.Color.White) {
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.Home, contentDescription = "Shop") },
+            selected = false,
+            onClick = { onNavigateTo(Routes.startPage) },
+            label = { Text("Shop") }
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.Search, contentDescription = "Explore") },
+            selected = false,
+            onClick = { onNavigateTo("explore") },
+            label = { Text("Explore") }
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Cart") },
+            selected = true,
+            onClick = { onNavigateTo(Routes.cart) },
+            label = { Text("Cart") }
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.Favorite, contentDescription = "Favourite") },
+            selected = false,
+            onClick = { onNavigateTo(Routes.favourite) },
+            label = { Text("Favourite") }
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.AccountCircle, contentDescription = "Account") },
+            selected = false,
+            onClick = { onNavigateTo(Routes.Account) },
+            label = { Text("Account") }
+        )
+    }
+}
+
 @Composable
 private fun CartRow(
     item: CartItem,
