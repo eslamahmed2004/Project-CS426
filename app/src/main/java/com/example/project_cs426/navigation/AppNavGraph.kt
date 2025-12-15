@@ -8,19 +8,28 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.project_cs426.pages.home.HomeScreen
-import com.example.project_cs426.pages.product.Explore
-import com.example.project_cs426.pages.product.ProductsByCategoryScreen
-import com.example.project_cs426.pages.product.ProductsBySearchScreen
 import com.example.ecommerce.pages.account.AccountScreen
 import com.example.project_cs426.R
 import com.example.project_cs426.model.User
-import com.example.project_cs426.pages.auth.*
+import com.example.project_cs426.pages.admin.AdminDashboardRoute
+import com.example.project_cs426.pages.auth.StartPage
+import com.example.project_cs426.pages.auth.location
+import com.example.project_cs426.pages.auth.login
+import com.example.project_cs426.pages.auth.onbording
+import com.example.project_cs426.pages.auth.register
 import com.example.project_cs426.pages.cart.Cart
-import com.example.project_cs426.pages.checkout.*
+import com.example.project_cs426.pages.checkout.Checkout
+import com.example.project_cs426.pages.checkout.Error
+import com.example.project_cs426.pages.checkout.Success
 import com.example.project_cs426.pages.favourite.Favourite
+import com.example.project_cs426.pages.home.HomeScreen
+import com.example.project_cs426.pages.product.Explore
 import com.example.project_cs426.pages.product.ProductDetailsScreen
-import com.example.project_cs426.viewmodel.*
+import com.example.project_cs426.pages.product.ProductsByCategoryScreen
+import com.example.project_cs426.pages.product.ProductsBySearchScreen
+import com.example.project_cs426.viewmodel.AuthViewModel
+import com.example.project_cs426.viewmodel.CartViewModel
+import com.example.project_cs426.viewmodel.ProductViewModel
 
 @Composable
 fun AppNavGraph(navController: NavHostController) {
@@ -37,8 +46,15 @@ fun AppNavGraph(navController: NavHostController) {
         composable(Routes.REGISTER) { register(navController) }
 
 
+
+
+        composable(Routes.ADMIN_DASHBOARD) {
+            AdminDashboardRoute(navController)
+        }
+
+
         composable(Routes.HOME) {
-            HomeScreen(navController = navController)
+            HomeScreen(navController)
         }
 
         composable(Routes.EXPLORE) {
@@ -114,5 +130,7 @@ fun AppNavGraph(navController: NavHostController) {
                 onLogoutClick = {}
             )
         }
+
+
     }
 }

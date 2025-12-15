@@ -11,6 +11,8 @@ class AuthViewModel : ViewModel() {
 //
     val username = mutableStateOf("")
     val email = mutableStateOf("")
+    private val ADMIN_EMAIL = "admin@gmail.com"
+
     val password = mutableStateOf("")
 
     val passwordVisible = mutableStateOf(false)
@@ -41,7 +43,11 @@ class AuthViewModel : ViewModel() {
         password.value = ""
     }
 
-    fun login(onSuccess: () -> Unit, onError: (String) -> Unit) {
+    fun login(
+        onSuccessUser: () -> Unit,
+        onSuccessAdmin: () -> Unit,
+        onError: (String) -> Unit
+    ) {
         if (email.value.isBlank() || password.value.isBlank()) {
             onError("Email or Password cannot be empty")
             return
@@ -49,11 +55,17 @@ class AuthViewModel : ViewModel() {
 
         viewModelScope.launch {
             isLoading.value = true
-            delay(1200)
+            delay(800)
             isLoading.value = false
-            onSuccess()
+
+            if (email.value.trim().lowercase() == ADMIN_EMAIL) {
+                onSuccessAdmin()
+            } else {
+                onSuccessUser()
+            }
         }
     }
+
 
     fun signup(onSuccess: () -> Unit, onError: (String) -> Unit) {
         if (username.value.isBlank() || email.value.isBlank() || password.value.isBlank()) {

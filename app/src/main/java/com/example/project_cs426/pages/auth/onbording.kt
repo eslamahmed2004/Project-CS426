@@ -104,6 +104,12 @@ fun onbording(
 
             // Get Started button
             val green = Color(0xFF53B175)
+
+            Button(onClick = {
+                navController.navigate(Routes.ADMIN_DASHBOARD)
+            }) {
+                Text("TEST ADMIN")
+            }
             Button(
                 onClick = {
                     navController?.navigate(Routes.LOCATION)

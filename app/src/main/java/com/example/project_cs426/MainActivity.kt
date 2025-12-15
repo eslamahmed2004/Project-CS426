@@ -45,7 +45,8 @@ class MainActivity : ComponentActivity() {
                         Routes.ONBOARDING,
                         Routes.LOCATION,
                         Routes.LOGIN,
-                        Routes.REGISTER
+                        Routes.REGISTER,
+                        Routes.ADMIN_DASHBOARD
                     )
 
                     Scaffold(

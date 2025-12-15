@@ -187,11 +187,21 @@ fun login(
             Button(
                 onClick = {
                     viewModel.login(
-                        onSuccess = { navController.navigate(Routes.HOME) },
+                        onSuccessUser = {
+                            navController.navigate(Routes.HOME) {
+                                popUpTo(Routes.LOGIN) { inclusive = true }
+                            }
+                        },
+                        onSuccessAdmin = {
+                            navController.navigate(Routes.ADMIN_DASHBOARD) {
+                                popUpTo(Routes.LOGIN) { inclusive = true }
+                            }
+                        },
                         onError = { msg ->
                             viewModel.errorMessage.value = msg
                         }
                     )
+
                 },
                 modifier = Modifier
                     .fillMaxWidth()
