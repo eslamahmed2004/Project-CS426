@@ -1,14 +1,17 @@
 package com.example.project_cs426.navigation
 
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.painterResource
-import androidx.navigation.NavController
-import com.example.project_cs426.R
-import com.example.project_cs426.com.example.project_cs426.navigation.Routes
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.project_cs426.R
 import com.example.project_cs426.ui.theme.Black
 import com.example.project_cs426.ui.theme.PrimaryGreen
 
@@ -24,8 +27,8 @@ fun BottomBar(navController: NavController) {
     ){
 
         NavigationBarItem(
-            selected = currentRoute == Routes.home,
-            onClick = { navController.navigate(Routes.home) },
+            selected = currentRoute == Routes.HOME,
+            onClick = { navController.navigate(Routes.HOME) },
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.ic_home),
@@ -42,8 +45,8 @@ fun BottomBar(navController: NavController) {
         )
 
         NavigationBarItem(
-            selected = currentRoute == Routes.Explorer,
-            onClick = { navController.navigate(Routes.Explorer) },
+            selected = currentRoute == Routes.EXPLORE,
+            onClick = { navController.navigate(Routes.EXPLORE) },
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.ic_explore),
@@ -60,8 +63,8 @@ fun BottomBar(navController: NavController) {
         )
 
         NavigationBarItem(
-            selected = currentRoute == Routes.cart,
-            onClick = { navController.navigate(Routes.cart) },
+            selected = currentRoute == Routes.CART,
+            onClick = { navController.navigate(Routes.CART) },
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.ic_cart),
@@ -78,8 +81,8 @@ fun BottomBar(navController: NavController) {
         )
 
         NavigationBarItem(
-            selected = currentRoute == Routes.favourite,
-            onClick = { navController.navigate(Routes.favourite) },
+            selected = currentRoute == Routes.FAVORITE,
+            onClick = { navController.navigate(Routes.FAVORITE) },
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.ic_favorite),
@@ -96,8 +99,8 @@ fun BottomBar(navController: NavController) {
         )
 
         NavigationBarItem(
-            selected = currentRoute == Routes.Account,
-            onClick = { navController.navigate(Routes.Account) },
+            selected = currentRoute == Routes.ACCOUNT,
+            onClick = { navController.navigate(Routes.ACCOUNT) },
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.ic_account),

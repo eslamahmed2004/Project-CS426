@@ -4,7 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import com.example.project_cs426.com.example.project_cs426.navigation.Routes
+import com.example.project_cs426.navigation.Routes
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -73,7 +73,7 @@ fun Cart(
 
             Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                 Button(
-                    onClick = { onNavigateTo(Routes.checkout) },
+                    onClick = { onNavigateTo(Routes.CHECKOUT) },
                     modifier = Modifier.weight(1f).height(56.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen),
                     shape = RoundedCornerShape(12.dp)
@@ -128,10 +128,10 @@ private fun CartRow(
 @Composable
 private fun CartBottomBar(onNavigateTo: (route: String) -> Unit) {
     NavigationBar(containerColor = Color.White) {
-        NavigationBarItem(selected = false, onClick = { onNavigateTo(Routes.home) }, icon = { Icon(Icons.Default.Home, contentDescription = "Shop") }, label = { Text("Shop") })
-        NavigationBarItem(selected = false, onClick = { onNavigateTo(Routes.Explorer) }, icon = { Icon(Icons.Default.Search, contentDescription = "Explore") }, label = { Text("Explore") })
-        NavigationBarItem(selected = true, onClick = { onNavigateTo(Routes.cart) }, icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Cart") }, label = { Text("Cart") })
-        NavigationBarItem(selected = false, onClick = { onNavigateTo(Routes.favourite) }, icon = { Icon(Icons.Default.Favorite, contentDescription = "Favourite") }, label = { Text("Favourite") })
-        NavigationBarItem(selected = false, onClick = { onNavigateTo(Routes.Account) }, icon = { Icon(Icons.Default.AccountCircle, contentDescription = "Account") }, label = { Text("Account") })
+        NavigationBarItem(selected = false, onClick = { onNavigateTo(Routes.HOME) }, icon = { Icon(Icons.Default.Home, contentDescription = "Shop") }, label = { Text("Shop") })
+        NavigationBarItem(selected = false, onClick = { onNavigateTo(Routes.EXPLORE) }, icon = { Icon(Icons.Default.Search, contentDescription = "Explore") }, label = { Text("Explore") })
+        NavigationBarItem(selected = true, onClick = { onNavigateTo(Routes.CART) }, icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Cart") }, label = { Text("Cart") })
+        NavigationBarItem(selected = false, onClick = { onNavigateTo(Routes.FAVORITE) }, icon = { Icon(Icons.Default.Favorite, contentDescription = "Favourite") }, label = { Text("Favourite") })
+        NavigationBarItem(selected = false, onClick = { onNavigateTo(Routes.ACCOUNT) }, icon = { Icon(Icons.Default.AccountCircle, contentDescription = "Account") }, label = { Text("Account") })
     }
 }
