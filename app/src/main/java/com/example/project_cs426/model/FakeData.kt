@@ -78,17 +78,17 @@ object FakeData {
         )
     )
     val sampleFavourites = listOf(
-        FavouriteItem(1, "Sprite Can", "325ml, Price", 1.50, R.drawable.sprite_can),
-        FavouriteItem(2, "Diet Coke", "355ml, Price", 1.99, R.drawable.diet_coke),
-        FavouriteItem(3, "Apple & Grape Juice", "2L, Price", 15.50, R.drawable.apple_grape_juice),
-        FavouriteItem(4, "Coca Cola Can", "325ml, Price", 4.99, R.drawable.coca_cola_can),
-        FavouriteItem(4, "Coca Cola Can", "325ml, Price", 4.99, R.drawable.coca_cola_can),
-        FavouriteItem(4, "Coca Cola Can", "325ml, Price", 4.99, R.drawable.coca_cola_can),
-        FavouriteItem(4, "Coca Cola Can", "325ml, Price", 4.99, R.drawable.coca_cola_can),
-        FavouriteItem(4, "Coca Cola Can", "325ml, Price", 4.99, R.drawable.coca_cola_can),
-        FavouriteItem(4, "Coca Cola Can", "325ml, Price", 4.99, R.drawable.coca_cola_can),
-        FavouriteItem(4, "Coca Cola Can", "325ml, Price", 4.99, R.drawable.coca_cola_can),
-        FavouriteItem(5, "Pepsi Can", "330ml, Price", 4.99, R.drawable.pepsi_can)
+        FavouriteItem(1, "Sprite Can", "325ml, Price", "$1.50", R.drawable.sprite_can),
+        FavouriteItem(2, "Diet Coke", "355ml, Price", "$1.99", R.drawable.diet_coke),
+        FavouriteItem(3, "Apple & Grape Juice", "2L, Price", "$15.50", R.drawable.apple_grape_juice),
+        FavouriteItem(4, "Coca Cola Can", "325ml, Price", "$4.99", R.drawable.coca_cola_can),
+        FavouriteItem(4, "Coca Cola Can", "325ml, Price", "$4.99", R.drawable.coca_cola_can),
+        FavouriteItem(4, "Coca Cola Can", "325ml, Price", "$4.99", R.drawable.coca_cola_can),
+        FavouriteItem(4, "Coca Cola Can", "325ml, Price", "$4.99", R.drawable.coca_cola_can),
+        FavouriteItem(4, "Coca Cola Can", "325ml, Price", "$4.99", R.drawable.coca_cola_can),
+        FavouriteItem(4, "Coca Cola Can", "325ml, Price", "$4.99", R.drawable.coca_cola_can),
+        FavouriteItem(4, "Coca Cola Can", "325ml, Price", "$4.99", R.drawable.coca_cola_can),
+        FavouriteItem(5, "Pepsi Can", "330ml, Price", "$4.99", R.drawable.pepsi_can)
     )
 
     val categories = listOf(
