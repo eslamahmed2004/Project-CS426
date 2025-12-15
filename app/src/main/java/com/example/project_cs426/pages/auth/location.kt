@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.project_cs426.R
-import com.example.project_cs426.navigation.Routes
+import com.example.project_cs426.com.example.project_cs426.navigation.Routes
 
 @Composable
 fun location(
@@ -152,7 +152,7 @@ fun location(
             val green = Color(0xFF53B175)
             Button(
                 onClick = {
-                    navController.navigate(Routes.LOGIN)
+                    navController.navigate(Routes.login)
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = green),
                 modifier = Modifier

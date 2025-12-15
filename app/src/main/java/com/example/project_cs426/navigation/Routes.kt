@@ -22,6 +22,8 @@ object Routes {
     const val Account = "account"
     const val   Explorer = "explorer"
     const val   Register = "register"
+    const val   PRODUCT_CATEGORY = "PRODUCT_CATEGORY"
+    const val   PRODUCT_SEARCH = "PRODUCT_SEARCH"
 
     const val filters = "filters"
 
