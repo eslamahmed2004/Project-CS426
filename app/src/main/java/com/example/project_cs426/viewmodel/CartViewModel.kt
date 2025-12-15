@@ -11,27 +11,29 @@ class CartViewModel : ViewModel() {
     private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
     val cartItems: StateFlow<List<CartItem>> = _cartItems.asStateFlow()
 
+    // Add single item (merge by id)
     fun addItem(item: CartItem) {
         val current = _cartItems.value.toMutableList()
-        val existingIndex = current.indexOfFirst { it.id == item.id }
-        if (existingIndex != -1) {
-            val oldItem = current[existingIndex]
-            current[existingIndex] = oldItem.copy(quantity = oldItem.quantity + item.quantity)
+        val idx = current.indexOfFirst { it.id == item.id }
+        if (idx != -1) {
+            val old = current[idx]
+            current[idx] = old.copy(quantity = old.quantity + item.quantity)
         } else {
             current.add(item)
         }
         _cartItems.value = current
     }
 
+    // Add all (used by Favourite -> Add All To Cart)
     fun addAllItems(items: List<CartItem>) {
         val current = _cartItems.value.toMutableList()
-        for (item in items) {
-            val existingIndex = current.indexOfFirst { it.id == item.id }
-            if (existingIndex != -1) {
-                val oldItem = current[existingIndex]
-                current[existingIndex] = oldItem.copy(quantity = oldItem.quantity + item.quantity)
+        for (it in items) {
+            val idx = current.indexOfFirst { ci -> ci.id == it.id }
+            if (idx != -1) {
+                val old = current[idx]
+                current[idx] = old.copy(quantity = old.quantity + it.quantity)
             } else {
-                current.add(item)
+                current.add(it)
             }
         }
         _cartItems.value = current
@@ -46,13 +48,8 @@ class CartViewModel : ViewModel() {
             removeItem(id)
             return
         }
-        val updated = _cartItems.value.map { item ->
-            if (item.id == id) item.copy(quantity = newQuantity) else item
-        }
-        _cartItems.value = updated
+        _cartItems.value = _cartItems.value.map { if (it.id == id) it.copy(quantity = newQuantity) else it }
     }
 
-    fun getTotalPrice(): Double {
-        return _cartItems.value.sumOf { it.price * it.quantity }
-    }
+    fun getTotalPrice(): Double = _cartItems.value.sumOf { it.price * it.quantity }
 }

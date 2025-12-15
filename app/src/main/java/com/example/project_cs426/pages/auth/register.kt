@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.project_cs426.R
-import com.example.project_cs426.navigation.Routes
+import com.example.project_cs426.com.example.project_cs426.navigation.Routes
 import com.example.project_cs426.viewmodel.AuthViewModel
 
 
@@ -187,7 +187,7 @@ fun register(
                     text = "Terms of Service",
                     color = green,
                     modifier = Modifier.clickable {
-                        navController?.navigate(Routes.TERMS)
+                        navController?.navigate(Routes.Terms)
                     }
                 )
 
@@ -200,7 +200,7 @@ fun register(
                     text = "Privacy Policy",
                     color = green,
                     modifier = Modifier.clickable {
-                        navController?.navigate(Routes.PRIVACY)
+                        navController?.navigate(Routes.Privacy)
                     }
                 )
             }
@@ -213,7 +213,7 @@ fun register(
                 onClick = {
                     viewModel.signup(
                         onSuccess = {
-                            navController?.navigate(Routes.LOGIN)
+                            navController?.navigate(Routes.login)
                         },
                         onError = { msg ->
                             viewModel.errorMessage.value = msg
@@ -246,7 +246,7 @@ fun register(
                     text = "Login",
                     color = green,
                     modifier = Modifier.clickable {
-                        navController?.navigate(Routes.LOGIN)
+                        navController?.navigate(Routes.login)
                     }
                 )
             }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import com.example.project_cs426.com.example.project_cs426.navigation.Routes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -31,7 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import com.example.project_cs426.model.CategoryProducts
-import com.example.project_cs426.navigation.Routes
+
 import com.example.project_cs426.pages.product.ProductBox
 import com.example.project_cs426.pages.product.SearchBar
 import com.example.project_cs426.pages.product.SearchBar
@@ -209,7 +210,7 @@ fun ShowSliderCategory(navController: NavController) {
                 style = MaterialTheme.typography.bodySmall,
                 color = PrimaryGreen,
                 modifier = Modifier.clickable {
-                    navController.navigate(Routes.EXPLORE)
+                    navController.navigate(Routes.Explorer)
                 }
             )
         }
