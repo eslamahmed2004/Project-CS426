@@ -1,57 +1,71 @@
 package com.example.project_cs426.pages.home
-import androidx.compose.runtime.Composable
-import com.example.project_cs426.R
-import com.example.project_cs426.model.FakeData.categories
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import com.example.project_cs426.com.example.project_cs426.navigation.Routes
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.project_cs426.model.CategoryProducts
-
+import com.example.project_cs426.R
+import com.example.project_cs426.data.local.LocationPreferences
+import com.example.project_cs426.model.FakeData.categories
+import com.example.project_cs426.navigation.Routes
 import com.example.project_cs426.pages.product.ProductBox
-import com.example.project_cs426.pages.product.SearchBar
 import com.example.project_cs426.pages.product.SearchBar
 import com.example.project_cs426.ui.theme.Black
 import com.example.project_cs426.ui.theme.DarkGray
-import com.example.project_cs426.ui.theme.MatteGray
 import com.example.project_cs426.ui.theme.PrimaryGreen
-import com.example.project_cs426.ui.theme.WhiteGray
 
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavController,
+) {
+    val context = LocalContext.current
+    val locationPrefs = remember { LocationPreferences(context) }
+
+    val country by locationPrefs.country.collectAsState(initial = "")
+    val city by locationPrefs.city.collectAsState(initial = "")
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
 
     ) {
         item {
-            Header()
+            Header(
+                    selectedCountry = country,
+                    selectedCity = city
+            )
         }
 
         item {
@@ -80,7 +94,11 @@ fun HomeScreen(navController: NavController) {
     }
 }
 @Composable
-fun Header() {
+fun Header(
+    selectedCountry: String,
+    selectedCity: String
+) {
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -105,11 +123,15 @@ fun Header() {
             Spacer(modifier = Modifier.width(6.dp))
 
             Text(
-                text = "Dhaka, Banassre",
+                text = if (selectedCountry.isNotEmpty() && selectedCity.isNotEmpty())
+                    "$selectedCity, $selectedCountry"
+                else
+                    "Select your location",
                 color = DarkGray,
                 fontWeight = FontWeight.Bold
             )
         }
+
     }
 }
 
@@ -210,7 +232,7 @@ fun ShowSliderCategory(navController: NavController) {
                 style = MaterialTheme.typography.bodySmall,
                 color = PrimaryGreen,
                 modifier = Modifier.clickable {
-                    navController.navigate(Routes.Explorer)
+                    navController.navigate(Routes.EXPLORE)
                 }
             )
         }
