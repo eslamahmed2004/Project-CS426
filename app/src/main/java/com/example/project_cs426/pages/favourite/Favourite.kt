@@ -1,98 +1,191 @@
 package com.example.project_cs426.pages.favourite
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material3.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.project_cs426.R
-import com.example.project_cs426.model.CartItem
-import com.example.project_cs426.viewmodel.CartViewModel
-import kotlinx.coroutines.launch
+import androidx.navigation.NavController
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.example.project_cs426.ui.theme.PrimaryGreen
+import com.example.project_cs426.ui.theme.MatteGray
+import com.example.project_cs426.ui.theme.DarkGray
 
-
-data class FavouriteItem(val id: Int, val title: String, val subtitle: String, val price: String, val drawableRes: Int)
-
-private val sampleFavourites = listOf(
-    FavouriteItem(1, "Sprite Can", "325ml, Price", "$1.50", R.drawable.sprite_can),
-    FavouriteItem(2, "Diet Coke", "355ml, Price", "$1.99", R.drawable.diet_coke),
-    FavouriteItem(3, "Apple & Grape Juice", "2L, Price", "$15.50", R.drawable.apple_grape_juice),
-    FavouriteItem(4, "Coca Cola Can", "325ml, Price", "$4.99", R.drawable.coca_cola_can),
-    FavouriteItem(5, "Pepsi Can", "330ml, Price", "$4.99", R.drawable.pepsi_can)
-)
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Favourite(
-    cartViewModel: CartViewModel = viewModel(),
-    onNavigateTo: (route: String) -> Unit = {}
+    navController: NavController,
+    favouritesViewModel: FavouritesViewModel = viewModel(),
+    onAddAllToCart: (List<FavouriteItemUi>) -> Unit = {}
 ) {
-    val scope = rememberCoroutineScope()
+    val items = favouritesViewModel.items
 
-    Scaffold(topBar = {
-        CenterAlignedTopAppBar(title = { Text("Favourite", fontSize = 20.sp) })
-    }, bottomBar = {
-        BottomAppBar { /* could reuse bottom nav */ }
-    }) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-            LazyColumn(modifier = Modifier.weight(1f)) {
-                items(sampleFavourites) { item ->
-                    FavouriteRow(item = item, onClick = { /* open details */ })
-                    Divider()
-                }
-            }
-
-            Button(onClick = {
-                val itemsToAdd = sampleFavourites.map { fav ->
-                    CartItem(
-                        id = fav.id,
-                        name = fav.title,
-                        subtitle = fav.subtitle,
-                        price = fav.price.replace("$","").toDoubleOrNull() ?: 0.0,
-                        imageRes = fav.drawableRes,
-                        quantity = 1
-                    )
-                }
-                try {
-                    cartViewModel.addAllItems(itemsToAdd)
-                } catch (e: Exception) {
-                    scope.launch {
-                        itemsToAdd.forEach { cartViewModel.addItem(it) }
+    Scaffold(
+        topBar = { FavouriteTopBar() },
+        bottomBar = {
+            if (items.isNotEmpty()) {
+                FavouriteBottomBar(
+                    totalCount = items.size,
+                    onAddAll = {
+                        // نحصل على قائمة العناصر من الـ ViewModel ونمرّرها للخارج
+                        val list = favouritesViewModel.addAll()
+                        onAddAllToCart(list)
                     }
-                }
-            }, modifier = Modifier.fillMaxWidth().padding(20.dp).height(50.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))) {
-                Text("Add All To Cart", color = Color.White)
+                )
+            }
+        }
+    ) { padding ->
+        if (items.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "No favourites yet", color = DarkGray)
+            }
+            return@Scaffold
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
+            contentPadding = PaddingValues(bottom = 96.dp, top = 8.dp)
+        ) {
+            items(items, key = { it.id }) { fav ->
+                FavouriteItem(
+                    item = fav,
+                    onClick = {
+                        // open product details (route name must match your nav graph)
+                        navController.navigate("product/${fav.id}")
+                    },
+                    onRemove = {
+                        favouritesViewModel.removeItem(fav.id)
+                    }
+                )
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FavouriteRow(item: FavouriteItem, onClick: () -> Unit) {
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .clickable { onClick() }
-        .padding(16.dp),
+private fun FavouriteTopBar() {
+    TopAppBar(
+        title = {
+            Text(
+                text = "Favourite",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.Black
+            )
+        },
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+    )
+}
+
+@Composable
+private fun FavouriteBottomBar(totalCount: Int, onAddAll: () -> Unit) {
+    Surface(
+        tonalElevation = 6.dp,
+        shadowElevation = 6.dp,
+        color = Color.White
+    ) {
+        Column {
+            Divider(thickness = 0.5.dp, color = MatteGray)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                    onClick = { onAddAll() }, // استدعاء الـ lambda الممررة من الخارج
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
+                ) {
+                    Text(text = "Add All To Cart", color = MaterialTheme.colorScheme.onPrimary)
+                }
+            }
+            Divider(thickness = 0.5.dp, color = MatteGray)
+            BottomNavigationBarMock()
+        }
+    }
+}
+
+@Composable
+private fun BottomNavigationBarMock() {
+    // Visual mimic for bottom nav (replace with your real bottom nav if needed)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(64.dp)
+            .background(MaterialTheme.colorScheme.surface),
+        horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(painter = painterResource(item.drawableRes), contentDescription = item.title, modifier = Modifier.size(45.dp))
-        Spacer(Modifier.width(12.dp))
-        Column { Text(item.title); Text(item.subtitle, fontSize = 13.sp, color = Color(0xFFA1A1A1)) }
-        Spacer(Modifier.weight(1f))
-        Text(item.price)
-        Spacer(Modifier.width(8.dp))
-        Icon(Icons.Default.ArrowForward, contentDescription = "Go")
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(imageVector = androidx.compose.material.icons.Icons.Default.Storefront, contentDescription = "Shop", tint = DarkGray)
+            Text(text = "Shop", style = MaterialTheme.typography.bodySmall, color = DarkGray)
+        }
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(imageVector = androidx.compose.material.icons.Icons.Default.Search, contentDescription = "Explore", tint = DarkGray)
+            Text(text = "Explore", style = MaterialTheme.typography.bodySmall, color = DarkGray)
+        }
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(imageVector = androidx.compose.material.icons.Icons.Default.ShoppingCart, contentDescription = "Cart", tint = DarkGray)
+            Text(text = "Cart", style = MaterialTheme.typography.bodySmall, color = DarkGray)
+        }
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(imageVector = androidx.compose.material.icons.Icons.Default.Favorite, contentDescription = "Favourite", tint = PrimaryGreen)
+            Text(text = "Favourite", style = MaterialTheme.typography.bodySmall, color = PrimaryGreen)
+        }
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(imageVector = androidx.compose.material.icons.Icons.Default.Person, contentDescription = "Account", tint = DarkGray)
+            Text(text = "Account", style = MaterialTheme.typography.bodySmall, color = DarkGray)
+        }
     }
+}
+
+/* ---------------- Previews ---------------- */
+
+@Preview(showBackground = true)
+@Composable
+fun FavouriteItemRowPreview() {
+    // use android drawable in preview to avoid missing project drawables
+    val previewItem = FavouriteItemUi(
+        id = "preview",
+        name = "Sprite Can",
+        subtitle = "325ml, Price",
+        price = 1.50,
+        imageRes = android.R.drawable.ic_menu_gallery
+    )
+
+    FavouriteItem(item = previewItem, onClick = {}, onRemove = {})
+}
+
+@Preview(showBackground = true)
+@Composable
+fun FavouritePreview() {
+    val dummyNav = rememberNavController()
+    val vm = FavouritesViewModel()
+    Favourite(
+        navController = dummyNav,
+        favouritesViewModel = vm,
+        onAddAllToCart = { /* preview no-op */ }
+    )
 }

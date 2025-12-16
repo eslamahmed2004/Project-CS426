@@ -1,83 +1,167 @@
 package com.example.project_cs426.pages.checkout
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.LocalShipping
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import com.example.project_cs426.navigation.Routes
+import com.example.project_cs426.ui.theme.DarkGray
+import com.example.project_cs426.ui.theme.MatteGray
+import com.example.project_cs426.ui.theme.PrimaryGreen
+import androidx.compose.ui.text.font.FontWeight
 
+/**
+ * CheckoutSheet composable — المحتوى الذي يظهر داخل الـ Modal Bottom Sheet.
+ *
+ * Parameters:
+ *  - total: Double -> إجمالي المبلغ
+ *  - onDismiss: () -> Unit -> لإغلاق الشيت
+ *  - onPlaceOrder: () -> Unit -> عند الضغط على Place Order
+ */
 @Composable
-fun Checkout(navController: NavHostController, totalPrice: Double) {
-    Box(modifier = Modifier.fillMaxSize().background(Color(0x47000000))) {
-        Column(modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().background(Color.White, shape = RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp)).padding(20.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                Text("Checkout", fontSize = 18.sp, color = Color(0xFF181725))
-                Spacer(Modifier.weight(1f))
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Filled.Close, contentDescription = "Close")
+fun Checkout(
+    total: Double,
+    onDismiss: () -> Unit,
+    onPlaceOrder: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp),
+        tonalElevation = 8.dp,
+        color = MaterialTheme.colorScheme.surface
+    ) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 18.dp)
+        ) {
+            // header row: title + close
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Checkout",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                IconButton(onClick = onDismiss) {
+                    Icon(imageVector = Icons.Default.Close, contentDescription = "Close")
                 }
             }
 
-            Spacer(Modifier.height(16.dp))
-            RowItem("Delivery", "Select Method")
-            RowItem("Payment", "•••• 1234")
-            RowItem("Promo Code", "Pick discount")
+            Spacer(modifier = Modifier.height(8.dp))
 
-            Spacer(Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().height(55.dp)) {
-                Text("Total Cost", fontSize = 14.sp)
-                Spacer(Modifier.weight(1f))
-                Text("$${"%.2f".format(totalPrice)}", fontSize = 16.sp)
+            // Delivery row
+            CheckoutRow(
+                icon = { Icon(Icons.Default.LocalShipping, contentDescription = "Delivery", tint = DarkGray) },
+                title = "Delivery",
+                subtitle = "Select Method",
+                onClick = { /* open delivery methods */ }
+            )
+
+            Divider(thickness = 0.5.dp, color = MatteGray)
+
+            // Payment row
+            CheckoutRow(
+                icon = { Icon(Icons.Default.CreditCard, contentDescription = "Payment", tint = DarkGray) },
+                title = "Payment",
+                subtitle = "Select Method",
+                onClick = { /* open payment */ }
+            )
+
+            Divider(thickness = 0.5.dp, color = MatteGray)
+
+            // Promo Code row
+            CheckoutRow(
+                icon = { /* optionally show promo icon */ },
+                title = "Promo Code",
+                subtitle = "Pick discount",
+                onClick = { /* open promo */ }
+            )
+
+            Divider(thickness = 0.5.dp, color = MatteGray)
+
+            // Total cost row
+            CheckoutRow(
+                icon = { /* no icon */ },
+                title = "Total Cost",
+                subtitle = "$${String.format("%.2f", total)}",
+                onClick = { /* maybe show details */ }
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = "By placing an order you agree to our\nTerms And Conditions",
+                style = MaterialTheme.typography.bodySmall,
+                color = DarkGray
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Place Order button
+            Button(
+                onClick = onPlaceOrder,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
+            ) {
+                Text(text = "Place Order", color = MaterialTheme.colorScheme.onPrimary)
             }
-            Divider()
 
-            Spacer(Modifier.height(12.dp))
-            Text("By placing an order you agree to our Terms And Conditions", fontSize = 11.sp, color = Color(0xFF949191))
-
-            Spacer(Modifier.height(12.dp))
-            Button(onClick = {
-                navController.navigate(Routes.SUCCESS) { launchSingleTop = true }
-            }, modifier = Modifier.fillMaxWidth().height(50.dp), shape = RoundedCornerShape(22.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF64B882))) {
-                Text("Place Order", color = Color.White)
-            }
-            Spacer(Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
 
 @Composable
-private fun RowItem(label: String, value: String) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(modifier = Modifier.fillMaxWidth().height(55.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text(label, fontSize = 14.sp)
-            Spacer(Modifier.weight(1f))
-            Text(value, fontSize = 13.sp, color = Color(0xFF949191))
-            Spacer(Modifier.width(8.dp))
-            Icon(Icons.Filled.ArrowForward, contentDescription = null)
+private fun CheckoutRow(
+    icon: @Composable (() -> Unit)? = null,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (icon != null) {
+            Box(modifier = Modifier.size(36.dp), contentAlignment = Alignment.Center) {
+                icon()
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+        } else {
+            Spacer(modifier = Modifier.width(48.dp))
         }
-        Divider()
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = DarkGray)
+        }
+
+        Icon(
+            imageVector = androidx.compose.material.icons.Icons.Default.KeyboardArrowRight,
+            contentDescription = null,
+            tint = DarkGray
+        )
     }
 }

@@ -1,136 +1,134 @@
 package com.example.project_cs426.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.project_cs426.com.example.project_cs426.navigation.Routes
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.ecommerce.pages.account.AccountScreen
-import com.example.project_cs426.R
-import com.example.project_cs426.model.User
-import com.example.project_cs426.pages.admin.AdminDashboardRoute
-import com.example.project_cs426.pages.auth.StartPage
-import com.example.project_cs426.pages.auth.location
-import com.example.project_cs426.pages.auth.login
-import com.example.project_cs426.pages.auth.onbording
-import com.example.project_cs426.pages.auth.register
+import com.example.project_cs426.pages.auth.*
 import com.example.project_cs426.pages.cart.Cart
+import com.example.project_cs426.pages.cart.CartItemUi
+import com.example.project_cs426.pages.cart.CartViewModel
 import com.example.project_cs426.pages.checkout.Checkout
 import com.example.project_cs426.pages.checkout.Error
 import com.example.project_cs426.pages.checkout.Success
 import com.example.project_cs426.pages.favourite.Favourite
+import com.example.project_cs426.pages.favourite.FavouritesViewModel
+
 import com.example.project_cs426.pages.home.HomeScreen
 import com.example.project_cs426.pages.product.Explore
-import com.example.project_cs426.pages.product.ProductDetailsScreen
 import com.example.project_cs426.pages.product.ProductsByCategoryScreen
 import com.example.project_cs426.pages.product.ProductsBySearchScreen
-import com.example.project_cs426.viewmodel.AuthViewModel
-import com.example.project_cs426.viewmodel.CartViewModel
+import com.example.project_cs426.pages.product.ProductDetailsScreen
 import com.example.project_cs426.viewmodel.ProductViewModel
 
 @Composable
 fun AppNavGraph(navController: NavHostController) {
+    val cartViewModel: CartViewModel = viewModel()
+    val favouritesViewModel: FavouritesViewModel = viewModel()
 
-    NavHost(
-        navController = navController,
-        startDestination = Routes.START
-    ) {
+    val cartVm: CartViewModel = viewModel()
 
-        composable(Routes.START) { StartPage(navController) }
-        composable(Routes.ONBOARDING) { onbording(navController) }
-        composable(Routes.LOCATION) { location(navController) }
-        composable(Routes.LOGIN) { login(navController) }
-        composable(Routes.REGISTER) { register(navController) }
+    NavHost(navController = navController, startDestination = Routes.startPage) {
+        composable(Routes.startPage) { StartPage(navController) }
+        composable(Routes.onbording) { onbording(navController) }
+        composable(Routes.location) { location(navController) }
+        composable(Routes.login) { login(navController) }
+        composable(Routes.signup) { register(navController) }
 
+        composable(Routes.home) { HomeScreen(navController = navController) }
+        composable(Routes.Explorer) { Explore(navController) }
 
-
-
-        composable(Routes.ADMIN_DASHBOARD) {
-            AdminDashboardRoute(navController)
-        }
-
-
-        composable(Routes.HOME) {
-            HomeScreen(navController)
-        }
-
-        composable(Routes.EXPLORE) {
-            Explore(navController = navController)
-        }
-
-        composable(
-            route = Routes.PRODUCT_CATEGORY,
-            arguments = listOf(navArgument("categoryName") { type = NavType.StringType })
-        ) {
+        composable(Routes.PRODUCT_CATEGORY, arguments = listOf(navArgument("categoryName") { type = NavType.StringType })) {
             val category = it.arguments?.getString("categoryName") ?: ""
             ProductsByCategoryScreen(category, navController)
         }
 
-        composable(
-            route = Routes.PRODUCT_SEARCH,
-            arguments = listOf(navArgument("query") { type = NavType.StringType })
-        ) {
+        composable(Routes.PRODUCT_SEARCH, arguments = listOf(navArgument("query") { type = NavType.StringType })) {
             val query = it.arguments?.getString("query") ?: ""
             ProductsBySearchScreen(query, navController)
         }
 
-        composable(
-            route = Routes.PRODUCT_DETAILS,
-            arguments = listOf(navArgument("productId") { type = NavType.IntType })
-        ) { backStackEntry ->
+        composable(Routes.PRODUCT_DETAILS, arguments = listOf(navArgument("productId") { type = NavType.IntType })) { backStack ->
             val productVm: ProductViewModel = viewModel()
-            val id = backStackEntry.arguments?.getInt("productId") ?: 0
-
-            LaunchedEffect(id) {
-                productVm.loadProduct(id)
-            }
-
+            val id = backStack.arguments?.getInt("productId") ?: 0
+            productVm.loadProduct(id)
             ProductDetailsScreen(navController, productVm)
         }
 
+        composable(Routes.favourite) {
 
-        composable(Routes.CART) {
-            val cartVm: CartViewModel = viewModel()
-            Cart(cartVm) { navController.navigate(it) }
-        }
+            Favourite(
+                navController = navController,
+                favouritesViewModel = favouritesViewModel,
+                onAddAllToCart = { favouriteItems ->
 
-        composable(Routes.FAVORITE) {
-            val cartVm: CartViewModel = viewModel()
-            Favourite(cartVm) { navController.navigate(it) }
-        }
+                    val cartItems = favouriteItems.map { fav ->
+                        CartItemUi(
+                            id = fav.id,
+                            name = fav.name,
+                            subtitle = fav.subtitle,
+                            price = fav.price,
+                            imageRes = fav.imageRes,
+                            quantity = 1
+                        )
+                    }
 
+                    cartViewModel.addAllToCart(cartItems)
 
-        composable(Routes.CHECKOUT) {
-            val cartVm: CartViewModel = viewModel()
-            Checkout(navController, cartVm.getTotalPrice())
-        }
-
-        composable(Routes.SUCCESS) { Success(navController) }
-        composable(Routes.ERROR) { Error(navController) }
-
-
-        composable(Routes.ACCOUNT) {
-            val authVm: AuthViewModel = viewModel()
-
-            AccountScreen(
-                user = User(
-                    name = authVm.username.value,
-                    email = authVm.email.value,
-                    image = R.drawable.screenshot
-                ),
-                onOrdersClick = {},
-                onMyDetailsClick = {},
-                onAddressClick = {},
-                onPaymentMethodsClick = {},
-                onPromoCodeClick = {},
-                onAboutClick = {},
-                onLogoutClick = {}
+                    navController.navigate(Routes.cart)
+                }
             )
         }
 
+        composable(Routes.cart) {
+            Cart(
+                navController = navController,
+                cartViewModel = cartViewModel
+            )
+        }
+
+        composable(Routes.checkout) {
+            Checkout(
+                total = cartViewModel.totalPrice(),            // total param name matches Checkout.kt
+                onDismiss = { navController.popBackStack() }, // close sheet / go back
+                onPlaceOrder = {
+                    // after placing order -> go to success screen
+                    navController.navigate(Routes.success) {
+                        // optional: adjust back stack if you want
+                        popUpTo(Routes.home) { inclusive = false }
+                    }
+                }
+            )
+        }
+
+        /* ==== Success / Error ==== */
+        composable(Routes.success) {
+            Success(navController = navController)
+        }
+
+        composable(Routes.error) {
+            Error(
+                onDismiss = { navController.popBackStack() },
+                onRetry = {
+                    navController.popBackStack()
+                    navController.navigate(Routes.checkout)
+                },
+                onBackHome = {
+                    navController.navigate(Routes.home) {
+                        popUpTo(Routes.home) { inclusive = true }
+                    }
+                }
+            )
+        }
 
     }
-}
+
+
+        // account, other routes...
+    }
+
+
