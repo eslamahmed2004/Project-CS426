@@ -31,6 +31,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -44,9 +45,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.project_cs426.R
-import com.example.project_cs426.com.example.project_cs426.navigation.Routes
+import com.example.project_cs426.navigation.Routes
 import com.example.project_cs426.ui.theme.PrimaryGreen
 import com.example.project_cs426.viewmodel.AuthViewModel
 
@@ -55,11 +57,19 @@ import com.example.project_cs426.viewmodel.AuthViewModel
 fun login(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    viewModel: AuthViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
     val bg = Color.White
     val scrollState = rememberScrollState()
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val db = remember { com.example.project_cs426.data.local.AppDatabase.getInstance(context) }
 
+    val viewModel: AuthViewModel = viewModel(
+        factory = object : androidx.lifecycle.ViewModelProvider.Factory {
+            override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                return AuthViewModel(db.userDao()) as T
+            }
+        }
+    )
 
 
     Surface(modifier = modifier.fillMaxSize(), color = bg) {
@@ -188,19 +198,17 @@ fun login(
                 onClick = {
                     viewModel.login(
                         onSuccessUser = {
-                            navController.navigate(Routes.home) {
-                                popUpTo(Routes.login) { inclusive = true }
+                            navController.navigate(Routes.HOME) {
+                                popUpTo(Routes.LOGIN) { inclusive = true }
                             }
                         },
                         onSuccessAdmin = {
                             navController.navigate(Routes.ADMIN_DASHBOARD) {
-                                popUpTo(Routes.login) { inclusive = true }
+                                popUpTo(Routes.LOGIN) { inclusive = true }
                             }
-                        },
-                        onError = { msg ->
-                            viewModel.errorMessage.value = msg
                         }
                     )
+
 
                 },
                 modifier = Modifier
@@ -230,7 +238,7 @@ fun login(
                     text = "Signup",
                     color = PrimaryGreen,
                     modifier = Modifier.clickable {
-                        navController?.navigate(Routes.Register)
+                        navController?.navigate(Routes.REGISTER)
                     }
                 )
             }

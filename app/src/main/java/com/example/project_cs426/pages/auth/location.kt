@@ -51,7 +51,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.project_cs426.R
 import com.example.project_cs426.data.local.LocationPreferences
-import com.example.project_cs426.com.example.project_cs426.navigation.Routes
+import com.example.project_cs426.navigation.Routes
 import com.example.project_cs426.viewmodel.LocationViewModel
 import kotlinx.coroutines.launch
 
@@ -186,7 +186,7 @@ fun location(
                         scope.launch {
                             locationPrefs.saveLocation(selectedCountry, selectedCity)
                         }
-                        navController.navigate(Routes.login)
+                        navController.navigate(Routes.LOGIN)
                     }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF53B175)),

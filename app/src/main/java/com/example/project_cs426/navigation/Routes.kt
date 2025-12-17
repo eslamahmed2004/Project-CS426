@@ -1,34 +1,34 @@
-package com.example.project_cs426.com.example.project_cs426.navigation
+package com.example.project_cs426.navigation
 
 object Routes {
-    const val startPage = "StartPage"
-    const val test="test"
-    const val login="login"
-    const val  onbording="onBording"
-    const val  location="location"
-    const val  home ="home"
-    const val cart = "cart"
-    const val checkout = "checkout"
-    const val success = "success"
-    const val error = "error"
 
-    const val favourite = "favourite"
-    const val signup="signup"
+    // Auth
+    const val START = "start"
+    const val ONBOARDING = "onboarding"
+    const val LOCATION = "location"
+    const val LOGIN = "login"
+    const val REGISTER = "register"
+    const val PRIVACY = "privacy"
+    const val TERMS = "terms"
 
-    const val Terms="terms"
 
-    const val Privacy= "privacy"
+    // Main
+    const val HOME = "home"
+    const val EXPLORE = "explore"
+    const val FAVORITE = "favorite"
+    const val CART = "cart"
+    const val CHECKOUT = "checkout"
+    const val SUCCESS = "success"
+    const val ERROR = "error"
+    const val ACCOUNT = "account"
 
-    const val Account = "account"
-    const val ADMIN_DASHBOARD = "ADMIN_DASHBOARD"
+    const val FILTERS = "filters"
 
-    const val   Explorer = "explorer"
-    const val   Register = "register"
-    const val   PRODUCT_CATEGORY = "PRODUCT_CATEGORY"
-    const val   PRODUCT_SEARCH = "PRODUCT_SEARCH"
-
-    const val filters = "filters"
-
+    // Product
     const val PRODUCT_DETAILS = "productDetails/{productId}"
+    const val PRODUCT_CATEGORY = "productsByCategory/{categoryName}"
+    const val PRODUCT_SEARCH = "productsBySearch/{query}"
 
+    ///
+    const val  ADMIN_DASHBOARD ="admin_dashboard"
 }

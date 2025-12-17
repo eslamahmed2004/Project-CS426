@@ -28,6 +28,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -42,7 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.project_cs426.R
-import com.example.project_cs426.com.example.project_cs426.navigation.Routes
+import com.example.project_cs426.navigation.Routes
 import com.example.project_cs426.viewmodel.AuthViewModel
 
 
@@ -51,12 +52,23 @@ import com.example.project_cs426.viewmodel.AuthViewModel
 fun register(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    viewModel: AuthViewModel = viewModel()
 
 ) {
     val bg = Color.White
     val green = Color(0xFF53B175)
     val scrollState = rememberScrollState()
+
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val db = remember { com.example.project_cs426.data.local.AppDatabase.getInstance(context) }
+
+    val viewModel: AuthViewModel = viewModel(
+        factory = object : androidx.lifecycle.ViewModelProvider.Factory {
+            override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                return AuthViewModel(db.userDao()) as T
+            }
+        }
+    )
+
 
 
     Surface(modifier = modifier.fillMaxSize(), color = bg) {
@@ -101,29 +113,25 @@ fun register(
             )
             Spacer(modifier = Modifier.height(18.dp))
 
-            val usernameError = viewModel.usernameError.value
 // username
             OutlinedTextField(
                 value = viewModel.username.value,
-                onValueChange = { viewModel.username.value = it
-                    viewModel.usernameError.value = null
-                                },
+                onValueChange = {
+                    viewModel.username.value = it
+                    viewModel.errorMessage.value = null
+                },
                 label = { Text("Username") },
-                isError = usernameError != null,
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = Color.Black,
                     unfocusedTextColor = Color.Black,
-
-                    focusedPlaceholderColor = Color(0xFFAAAAAA),
-                    unfocusedPlaceholderColor = Color(0xFFAAAAAA),
-
                     cursorColor = Color(0xFF53B175)
                 )
             )
-            
+
+
             Spacer(modifier = Modifier.height(18.dp))
   // Email
             OutlinedTextField(
@@ -187,7 +195,7 @@ fun register(
                     text = "Terms of Service",
                     color = green,
                     modifier = Modifier.clickable {
-                        navController?.navigate(Routes.Terms)
+                        navController?.navigate(Routes.TERMS)
                     }
                 )
 
@@ -200,7 +208,7 @@ fun register(
                     text = "Privacy Policy",
                     color = green,
                     modifier = Modifier.clickable {
-                        navController?.navigate(Routes.Privacy)
+                        navController?.navigate(Routes.PRIVACY)
                     }
                 )
             }
@@ -213,12 +221,13 @@ fun register(
                 onClick = {
                     viewModel.signup(
                         onSuccess = {
-                            navController?.navigate(Routes.login)
-                        },
-                        onError = { msg ->
-                            viewModel.errorMessage.value = msg
+                            navController.navigate(Routes.LOGIN) {
+                                popUpTo(Routes.REGISTER) { inclusive = true }
+                            }
                         }
-                    )                },
+                    )
+
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
@@ -246,7 +255,7 @@ fun register(
                     text = "Login",
                     color = green,
                     modifier = Modifier.clickable {
-                        navController?.navigate(Routes.login)
+                        navController?.navigate(Routes.LOGIN)
                     }
                 )
             }

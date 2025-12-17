@@ -1,5 +1,6 @@
 package com.example.project_cs426.pages.home
 
+import android.app.Application
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,25 +19,34 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
 import com.example.project_cs426.R
+import com.example.project_cs426.data.local.AppDatabase
 import com.example.project_cs426.data.local.LocationPreferences
 import com.example.project_cs426.model.FakeData.categories
-import com.example.project_cs426.com.example.project_cs426.navigation.Routes
+import com.example.project_cs426.navigation.Routes
 import com.example.project_cs426.pages.product.ProductBox
 import com.example.project_cs426.pages.product.SearchBar
-
-import com.example.project_cs426.pages.cart.CartItem
-import com.example.project_cs426.pages.cart.CartItemUi
-import com.example.project_cs426.pages.cart.CartViewModel
+import com.example.project_cs426.repository.CartRepository
 import com.example.project_cs426.ui.theme.*
+import com.example.project_cs426.viewmodel.HomeViewModel
 
 @Composable
 fun HomeScreen(
     navController: NavController,
-    // use the project's CartViewModel directly (avoids missing HomeViewModel / CartRepository)
-    cartViewModel: CartViewModel = viewModel()
+    viewModel: HomeViewModel = viewModel(
+        factory = viewModelFactory {
+            initializer {
+                val app = (this[APPLICATION_KEY] as Application)
+                val db = AppDatabase.getInstance(app)
+                HomeViewModel(CartRepository(db.cartDao()))
+            }
+        }
+    )
 ) {
     val context = LocalContext.current
     val locationPrefs = remember { LocationPreferences(context) }
@@ -71,8 +81,7 @@ fun HomeScreen(
         }
 
         item {
-            // pass cartViewModel so ProductBox -> add to cart works
-            ShowSliderProducts(navController, cartViewModel)
+            ShowSliderProducts(navController, viewModel)  // ← بعت الـ viewModel
         }
 
         item {
@@ -144,10 +153,11 @@ fun BannerCarousel() {
     }
     Spacer(modifier = Modifier.height(16.dp))
 }
+
 @Composable
 fun ShowSliderProducts(
     navController: NavController,
-    cartViewModel: CartViewModel
+    viewModel: HomeViewModel  // ← استقبله هنا
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         categories.take(2).forEach { categoryData ->
@@ -178,33 +188,17 @@ fun ShowSliderProducts(
                 contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
                 items(categoryData.products.take(10)) { product ->
-                    Box(
-                        modifier = Modifier
-                            .padding(end = 12.dp)
-                            .clickable { navController.navigate("productDetails/${product.id}") }
-                    ) {
-                        ProductBox(
-                            product = product,
-                            onAddToCart = { prod ->
-                                // تحويل Product -> CartItemUi (النوع الذي يتوقعه CartViewModel.addAllToCart)
-                                val cartItemUi = CartItemUi(
-                                    id = prod.id,
-                                    name = prod.name,
-                                    subtitle = prod.weight,
-                                    price = prod.price,
-                                    imageRes = prod.image,
-                                    quantity = 1
-                                )
-                                cartViewModel.addAllToCart(listOf(cartItemUi))
-                            }
-                        )
-                    }
+                    ProductBox(
+                        product = product,
+                        onAddToCart = { viewModel.addToCart(it) }
+                    )
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
+
 @Composable
 fun ShowSliderCategory(navController: NavController) {
     Column {
@@ -226,7 +220,7 @@ fun ShowSliderCategory(navController: NavController) {
                 style = MaterialTheme.typography.bodySmall,
                 color = PrimaryGreen,
                 modifier = Modifier.clickable {
-                    navController.navigate(Routes.Explorer)
+                    navController.navigate(Routes.EXPLORE)
                 }
             )
         }

@@ -33,10 +33,10 @@ import com.example.project_cs426.R
 import com.example.project_cs426.data.local.AppDatabase
 import com.example.project_cs426.model.FakeData.categories
 import com.example.project_cs426.pages.product.ProductBox
-
+import com.example.project_cs426.repository.CartRepository
 import com.example.project_cs426.ui.theme.Black
 import com.example.project_cs426.ui.theme.MatteGray
-
+import com.example.project_cs426.viewmodel.HomeViewModel
 
 @Composable
 fun ProductsByCategoryScreen(
@@ -55,80 +55,80 @@ fun ProductsByCategoryScreen(
     val category = categories.firstOrNull { it.category == categoryName }
 
     Column(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
-            Row(
+        Row(
+            modifier = Modifier
+                .fillMaxWidth().padding(vertical = 20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_back),
+                contentDescription = "Back",
+                tint = Color.Black,
                 modifier = Modifier
-                    .fillMaxWidth().padding(vertical = 20.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_back),
-                    contentDescription = "Back",
-                    tint = Color.Black,
-                    modifier = Modifier
-                        .size(16.dp)
-                        .clickable { navController.popBackStack() }
-                )
-                Text(
-                    text = categoryName,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 8.dp),
-                    textAlign = TextAlign.Center,
-                    color = Black
-                )
-                Icon(
-                    painter = painterResource(R.drawable.ic_filter),
-                    contentDescription = "Filter",
-                    tint = Color.Black,
-                    modifier = Modifier
-                        .size(16.dp)
-                        .clickable {
+                    .size(16.dp)
+                    .clickable { navController.popBackStack() }
+            )
+            Text(
+                text = categoryName,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp),
+                textAlign = TextAlign.Center,
+                color = Black
+            )
+            Icon(
+                painter = painterResource(R.drawable.ic_filter),
+                contentDescription = "Filter",
+                tint = Color.Black,
+                modifier = Modifier
+                    .size(16.dp)
+                    .clickable {
 
-                        }
-                )
-            }
+                    }
+            )
+        }
 
-            LazyColumn(
-                modifier = Modifier.padding(3.dp)
-            ) {
+        LazyColumn(
+            modifier = Modifier.padding(3.dp)
+        ) {
 
-                if (category != null) {
+            if (category != null) {
 
-                    items(category.products.chunked(2)) { rowItems ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
+                items(category.products.chunked(2)) { rowItems ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        ProductBox(
+                            rowItems[0],
+                            onAddToCart = { viewModel.addToCart(it) }
+                        )
+
+                        if (rowItems.size > 1) {
                             ProductBox(
-                                rowItems[0],
+                                rowItems[1],
                                 onAddToCart = { viewModel.addToCart(it) }
                             )
-
-                            if (rowItems.size > 1) {
-                                ProductBox(
-                                    rowItems[1],
-                                    onAddToCart = { viewModel.addToCart(it) }
-                                )
-                            } else {
-                                Spacer(modifier = Modifier.weight(1f))
-                            }
+                        } else {
+                            Spacer(modifier = Modifier.weight(1f))
                         }
-
-                        Spacer(modifier = Modifier.height(4.dp))
                     }
 
-                } else {
-                    item {
-                        Text(
-                            text = "No products found",
-                            modifier = Modifier.padding(16.dp),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
-                        )
-                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+
+            } else {
+                item {
+                    Text(
+                        text = "No products found",
+                        modifier = Modifier.padding(16.dp),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray
+                    )
                 }
             }
         }
     }
+}

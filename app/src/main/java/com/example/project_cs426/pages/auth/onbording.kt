@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.project_cs426.R
-import com.example.project_cs426.com.example.project_cs426.navigation.Routes
+import com.example.project_cs426.navigation.Routes
 
 @Composable
 fun onbording(
@@ -112,7 +112,7 @@ fun onbording(
             }
             Button(
                 onClick = {
-                    navController?.navigate(Routes.location)
+                    navController?.navigate(Routes.LOCATION)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
