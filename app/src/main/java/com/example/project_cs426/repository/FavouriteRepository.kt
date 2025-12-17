@@ -1,8 +1,8 @@
 package com.example.project_cs426.data.repository
 
+import com.example.project_cs426.pages.favourite.FavouriteItemUi
 import com.example.project_cs426.data.local.dao.FavouriteDao
 import com.example.project_cs426.data.local.entity.FavouriteEntity
-import com.example.project_cs426.pages.favourite.FavouriteItemUi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -10,36 +10,27 @@ class FavouriteRepository(
     private val dao: FavouriteDao
 ) {
 
-    /* ===================== Observe ===================== */
-
-    /**
-     * Observe favourites as UI models
-     */
+    /** يعيد Flow لقائمة FavouriteItemUi */
     fun observeFavourites(): Flow<List<FavouriteItemUi>> {
-        return dao.observeAll()
-            .map { entities ->
-                entities.map { it.toUi() }
-            }
+        // تأكد أن DAO لديه دالة observeAll() التي ترجع Flow<List<FavouriteEntity>>
+        return dao.observeAll().map { list ->
+            list.map { entity -> entity.toUi() }
+        }
     }
 
-    /* ===================== Actions ===================== */
-
-    /**
-     * Add item to favourites (ignored if already exists)
-     */
+    /** يضيف عنصر (suspend) */
     suspend fun add(item: FavouriteItemUi) {
         dao.insert(item.toEntity())
     }
 
-    /**
-     * Remove favourite by productId
-     */
+    /** يحذف عنصر بحسب productId (suspend) */
     suspend fun deleteByProductId(productId: Int) {
         dao.deleteByProductId(productId)
     }
 
     /**
-     * Toggle favourite state
+     * يقلب الحالة: لو موجود يحذفه وإلا يضيفه
+     * يستخدم dao.exists(productId) لأن DAO عندك يوفر exists وليس findByProductId
      */
     suspend fun toggle(item: FavouriteItemUi) {
         val exists = dao.exists(item.productId)
@@ -50,47 +41,32 @@ class FavouriteRepository(
         }
     }
 
-    /**
-     * Check if product is favourite
-     */
+    /** يرجع boolean لو العنصر مفضل أم لا (باستخدام exists) */
     suspend fun isFavourite(productId: Int): Boolean {
         return dao.exists(productId)
     }
-
-    /**
-     * Clear all favourites
-     */
-    suspend fun clear() {
-        dao.clear()
-    }
 }
 
-/* ===================== Mappers ===================== */
-
-/**
- * Entity -> UI
- */
-private fun FavouriteEntity.toUi(): FavouriteItemUi =
-    FavouriteItemUi(
+/* ---- تحويلات مساعدة بين Entity و UI model ----
+   إذا لديك Mapper class منفصل استخدمه بدلاً من هذي الدوال. */
+private fun FavouriteEntity.toUi(): FavouriteItemUi {
+    return FavouriteItemUi(
         uid = this.uid,
         productId = this.productId,
         name = this.name,
-        subtitle = this.subtitle ?: "", // fallback لو null
+        subtitle = this.subtitle ?: "",
         price = this.price,
-        imageRes = this.imageRes ?: android.R.drawable.ic_menu_report_image // fallback للصورة
-
+        imageRes = this.imageRes ?: android.R.drawable.ic_menu_report_image
     )
+}
 
-/**
- * UI -> Entity
- * uid MUST be 0 so Room auto-generates it
- */
-private fun FavouriteItemUi.toEntity(): FavouriteEntity =
-    FavouriteEntity(
-        uid = 0L,                    // 👈 مهم جدًا
-        productId = productId,
-        name = name,
-        subtitle = subtitle,
-        price = price,
-        imageRes = imageRes
+private fun FavouriteItemUi.toEntity(): FavouriteEntity {
+    return FavouriteEntity(
+        uid = this.uid,
+        productId = this.productId,
+        name = this.name,
+        subtitle = this.subtitle,
+        price = this.price,
+        imageRes = this.imageRes
     )
+}

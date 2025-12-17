@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,20 +30,36 @@ import com.example.project_cs426.ui.theme.MatteGray
 import com.example.project_cs426.ui.theme.PrimaryGreen
 import com.example.project_cs426.ui.theme.ProjectCS426Theme
 
+/**
+ * Simple data model for cart item.
+ * If your project already has CartItem or CartItemUi in another file,
+ * you can remove this definition and import the existing one instead.
+ */
+data class CartItem(
+    val id: Int,
+    val name: String,
+    val subtitle: String = "",
+    val price: Double,
+    val imageRes: Int,
+    val quantity: Int = 1
+)
+
 @Composable
 fun CartItem(
-    item: CartItemUi,
+    item: CartItem, // model from your project (id: Int)
     modifier: Modifier = Modifier,
     onIncrease: () -> Unit,
     onDecrease: () -> Unit,
     onRemove: () -> Unit,
-    onItemClick: () -> Unit
+    onItemClick: () -> Unit,
+    onOpen: () -> Unit = onItemClick // chevron action (defaults to onItemClick)
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .height(IntrinsicSize.Min),
+            .height(IntrinsicSize.Min)
+            .background(color = androidx.compose.ui.graphics.Color.Transparent),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Image
@@ -57,7 +74,7 @@ fun CartItem(
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        // Title + subtitle + quantity controls
+        // Title + subtitle + quantity controls (clicking column opens details too)
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -129,13 +146,14 @@ fun CartItem(
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        // Price and remove icon
+        // Price, remove icon, chevron
         Column(
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .padding(vertical = 8.dp)
         ) {
+            // remove (top)
             IconButton(
                 onClick = onRemove,
                 modifier = Modifier.size(28.dp)
@@ -149,11 +167,20 @@ fun CartItem(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // show total price for the row (price * qty)
+            val total = item.price * item.quantity
             Text(
-                text = "$${String.format("%.2f", item.price)}",
+                text = "$${String.format("%.2f", total)}",
                 style = MaterialTheme.typography.bodyLarge,
                 color = Black
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // chevron (bottom) -> opens product details
+            IconButton(onClick = onOpen, modifier = Modifier.size(28.dp)) {
+                Icon(imageVector = Icons.Default.ChevronRight, contentDescription = "Open", tint = DarkGray)
+            }
         }
     }
 }
@@ -163,18 +190,19 @@ fun CartItem(
 fun CartItemPreview() {
     ProjectCS426Theme {
         CartItem(
-            item = CartItemUi(
-                id = "1",
+            item = CartItem(
+                id = 1,
                 name = "Bell Pepper Red",
                 subtitle = "1kg, Price",
                 price = 4.99,
                 imageRes = android.R.drawable.ic_menu_gallery,
-                quantity = 1
+                quantity = 2
             ),
             onIncrease = {},
             onDecrease = {},
             onRemove = {},
-            onItemClick = {}
+            onItemClick = {},
+            onOpen = {}
         )
     }
 }

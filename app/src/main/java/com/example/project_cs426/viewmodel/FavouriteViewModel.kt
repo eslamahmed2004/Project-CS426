@@ -91,7 +91,7 @@ class FavouriteViewModel(
     fun toCartItems(list: List<FavouriteItemUi>): List<CartItemUi> {
         return list.map { fav ->
             CartItemUi(
-                id = fav.productId.toString(),
+                id = fav.productId,
                 name = fav.name,
                 subtitle = fav.subtitle,
                 price = fav.price,

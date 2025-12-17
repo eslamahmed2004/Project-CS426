@@ -35,8 +35,7 @@ import com.example.project_cs426.data.local.AppDatabase
 import com.example.project_cs426.ui.theme.MatteGray
 import kotlin.collections.chunked
 import com.example.project_cs426.model.FakeData.products
-import com.example.project_cs426.repository.CartRepository
-import com.example.project_cs426.viewmodel.HomeViewModel
+
 
 
 @Composable

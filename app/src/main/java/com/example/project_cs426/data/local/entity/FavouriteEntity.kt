@@ -14,7 +14,7 @@ import com.example.project_cs426.pages.favourite.FavouriteItemUi
 data class FavouriteEntity(
 
     @PrimaryKey(autoGenerate = true)
-    val uid: Long = 0L,          // 👈 auto generated
+    val uid: Long? = null,          // 👈 auto generated
 
     val productId: Int,          // 👈 ID الحقيقي للمنتج
 

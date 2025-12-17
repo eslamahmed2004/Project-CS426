@@ -36,7 +36,6 @@ import com.example.project_cs426.ui.theme.Black
 import com.example.project_cs426.ui.theme.MatteGray
 import com.example.project_cs426.ui.theme.PrimaryGreen
 import com.example.project_cs426.ui.theme.Silver
-import com.example.project_cs426.viewmodel.HomeViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
