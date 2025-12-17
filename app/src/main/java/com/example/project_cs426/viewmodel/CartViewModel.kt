@@ -1,98 +1,55 @@
-package com.example.project_cs426.pages.cart
+package com.example.project_cs426.viewmodel
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import kotlin.math.round
+import com.example.project_cs426.model.CartItem
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
-// UI model + fake data (استبدل بـ Room/Repository لاحقًا)
-data class CartItemUi(
-    val id: String,
-    val name: String,
-    val subtitle: String,
-    val price: Double,
-    val imageRes: Int,
-    val quantity: Int = 1
-)
+class CartViewModel : ViewModel() {
 
-object FakeCartData {
-    val sample = listOf(
-        CartItemUi(
-            id = "1",
-            name = "Bell Pepper Red",
-            subtitle = "1kg, Price",
-            price = 4.99,
-            imageRes = com.example.project_cs426.R.drawable.pepper // عدّل الاسم حسب drawable عندك
-        ),
-        CartItemUi(
-            id = "2",
-            name = "Egg Chicken Red",
-            subtitle = "4pcs, Price",
-            price = 1.99,
-            imageRes = com.example.project_cs426.R.drawable.eggs
-        ),
-        CartItemUi(
-            id = "3",
-            name = "Organic Bananas",
-            subtitle = "12kg, Price",
-            price = 3.00,
-            imageRes = com.example.project_cs426.R.drawable.bananas
-        ),
-        CartItemUi(
-            id = "4",
-            name = "Ginger",
-            subtitle = "250gm, Price",
-            price = 2.99,
-            imageRes = com.example.project_cs426.R.drawable.ginger
-        )
-    )
-}
+    private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
+    val cartItems: StateFlow<List<CartItem>> = _cartItems.asStateFlow()
 
-open class CartViewModel : ViewModel() {
-
-    // MutableStateList so Compose recomposes when items change
-    private val _items = mutableStateListOf<CartItemUi>().apply {
-        addAll(FakeCartData.sample) // <-- استبدل أو احذف لو عايز البداية فاضية
-    }
-    open val items: List<CartItemUi> get() = _items
-
-    open fun increaseQuantity(itemId: String) {
-        val index = _items.indexOfFirst { it.id == itemId }
-        if (index != -1) {
-            val it = _items[index]
-            _items[index] = it.copy(quantity = it.quantity + 1)
+    // Add single item (merge by id)
+    fun addItem(item: CartItem) {
+        val current = _cartItems.value.toMutableList()
+        val idx = current.indexOfFirst { it.id == item.id }
+        if (idx != -1) {
+            val old = current[idx]
+            current[idx] = old.copy(quantity = old.quantity + item.quantity)
+        } else {
+            current.add(item)
         }
+        _cartItems.value = current
     }
 
-    open fun decreaseQuantity(itemId: String) {
-        val index = _items.indexOfFirst { it.id == itemId }
-        if (index != -1) {
-            val it = _items[index]
-            val newQty = (it.quantity - 1).coerceAtLeast(1)
-            _items[index] = it.copy(quantity = newQty)
-        }
-    }
-
-    open fun removeItem(itemId: String) {
-        _items.removeAll { it.id == itemId }
-    }
-
-    /**
-     * Adds a list of CartItemUi to the current cart.
-     * If an item already exists, increment its quantity by newItem.quantity
-     */
-    fun addAllToCart(list: List<CartItemUi>) {
-        list.forEach { newItem ->
-            val idx = _items.indexOfFirst { it.id == newItem.id }
-            if (idx == -1) _items.add(newItem)
-            else {
-                val old = _items[idx]
-                _items[idx] = old.copy(quantity = old.quantity + newItem.quantity)
+    // Add all (used by Favourite -> Add All To Cart)
+    fun addAllItems(items: List<CartItem>) {
+        val current = _cartItems.value.toMutableList()
+        for (it in items) {
+            val idx = current.indexOfFirst { ci -> ci.id == it.id }
+            if (idx != -1) {
+                val old = current[idx]
+                current[idx] = old.copy(quantity = old.quantity + it.quantity)
+            } else {
+                current.add(it)
             }
         }
+        _cartItems.value = current
     }
 
-    open fun totalPrice(): Double {
-        val sum = _items.sumOf { it.price * it.quantity }
-        return (round(sum * 100)) / 100.0
+    fun removeItem(id: Int) {
+        _cartItems.value = _cartItems.value.filter { it.id != id }
     }
+
+    fun updateQuantity(id: Int, newQuantity: Int) {
+        if (newQuantity <= 0) {
+            removeItem(id)
+            return
+        }
+        _cartItems.value = _cartItems.value.map { if (it.id == id) it.copy(quantity = newQuantity) else it }
+    }
+
+    fun getTotalPrice(): Double = _cartItems.value.sumOf { it.price * it.quantity }
 }

@@ -2,19 +2,15 @@ package com.example.project_cs426.pages.cart
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import com.example.project_cs426.navigation.Routes
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Storefront
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,345 +19,119 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.project_cs426.pages.checkout.Checkout
-import com.example.project_cs426.ui.theme.DarkGray
-import com.example.project_cs426.ui.theme.MatteGray
-import com.example.project_cs426.ui.theme.PrimaryGreen
-import com.example.project_cs426.ui.theme.ProjectCS426Theme
-import com.example.project_cs426.navigation.BottomBar
-import kotlinx.coroutines.launch
+import com.example.project_cs426.model.CartItem
+import com.example.project_cs426.viewmodel.CartViewModel
+
+private val PrimaryGreen = Color(0xFF53B175)
+private val PrimaryText = Color(0xFF111827)
+private val SecondaryText = Color(0xFF6B7280)
+private val DividerColor = Color(0xFFE5E7EB)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Cart(
-    navController: NavController,
-    cartViewModel: CartViewModel = viewModel()
+    cartViewModel: CartViewModel = viewModel(),
+    onNavigateTo: (route: String) -> Unit = {}
 ) {
-    // items is expected to be a Compose-observed list (mutableStateListOf or StateFlow collected)
-    val items = cartViewModel.items
-    val total = cartViewModel.totalPrice()
-
-    // Bottom sheet state for Checkout
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
-    var showSheet by remember { mutableStateOf(false) }
-
-    if (showSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showSheet = false },
-            sheetState = sheetState
-        ) {
-            Checkout(
-                total = total,
-                onDismiss = { scope.launch { sheetState.hide(); showSheet = false } },
-                onPlaceOrder = {
-                    scope.launch {
-                        sheetState.hide()
-                        showSheet = false
-                        // If you want to call placeOrder on ViewModel:
-                        // cartViewModel.placeOrder { success -> ... }
-                    }
-                }
-            )
-        }
-    }
+    val items by cartViewModel.cartItems.collectAsState()
+    val totalText by remember(items) { derivedStateOf { String.format("$%.2f", cartViewModel.getTotalPrice()) } }
 
     Scaffold(
-        topBar = { CartTopBar() },
-        bottomBar = {
-            CartBottomBar(
-                total = total,
-                onCheckout = {
-                    scope.launch {
-                        showSheet = true
-                        sheetState.show()
-                    }
-                },
-                navController = navController // <-- pass navController so BottomBar can show
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("My Cart", fontSize = 18.sp) },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.White)
             )
         },
-        containerColor = Color(0xFFF7F7F7)
-    ) { padding ->
-        if (items.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "Your cart is empty", color = DarkGray)
-            }
-            return@Scaffold
-        }
-
-        LazyColumn(
+        bottomBar = {
+            CartBottomBar(onNavigateTo)
+        },
+        containerColor = Color.White
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(bottom = 140.dp, top = 8.dp)
+                .padding(innerPadding)
         ) {
-            items(items, key = { it.id }) { item ->
-                CartItemRow(
-                    item = item,
-                    onIncrease = { cartViewModel.increaseQuantity(item.id) },
-                    onDecrease = { cartViewModel.decreaseQuantity(item.id) },
-                    onRemove = { cartViewModel.removeItem(item.id) },
-                    onItemClick = { navController.navigate("product/${item.id}") }
-                )
-                Divider(color = Color(0xFFECECEC), thickness = 1.dp)
+            LazyColumn(modifier = Modifier.weight(1f)) {
+                items(items) { item ->
+                    CartRow(
+                        item = item,
+                        onIncrease = { cartViewModel.updateQuantity(item.id, item.quantity + 1) },
+                        onDecrease = {
+                            if (item.quantity > 1) cartViewModel.updateQuantity(item.id, item.quantity - 1)
+                            else cartViewModel.removeItem(item.id)
+                        },
+                        onRemove = { cartViewModel.removeItem(item.id) }
+                    )
+                    Divider(color = DividerColor, thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp))
+                }
+            }
+
+            Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                Button(
+                    onClick = { onNavigateTo(Routes.CHECKOUT) },
+                    modifier = Modifier.weight(1f).height(56.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Go to Checkout", color = Color.White)
+                }
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Box(modifier = Modifier.height(56.dp).widthIn(min = 72.dp).clip(RoundedCornerShape(12.dp)).background(PrimaryGreen), contentAlignment = Alignment.Center) {
+                    Text(totalText, color = Color.White)
+                }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CartTopBar() {
-    CenterAlignedTopAppBar(
-        title = {
-            Text(
-                text = "My Cart",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-        },
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.White)
-    )
-}
-
-/* ----------------- Cart item row ----------------- */
-@Composable
-fun CartItemRow(
-    item: CartItemUi,
+private fun CartRow(
+    item: CartItem,
     onIncrease: () -> Unit,
     onDecrease: () -> Unit,
-    onRemove: () -> Unit,
-    onItemClick: () -> Unit
+    onRemove: () -> Unit
 ) {
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .background(Color.White)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onItemClick() }
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Image
-            Box(
-                modifier = Modifier
-                    .size(64.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFFF2F2F2)),
-                contentAlignment = Alignment.Center
-            ) {
-                runCatching {
-                    Image(
-                        painter = painterResource(id = item.imageRes),
-                        contentDescription = item.name,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.size(56.dp)
-                    )
-                }.getOrElse {
-                    Box(
-                        modifier = Modifier
-                            .size(56.dp)
-                            .clip(CircleShape)
-                            .background(Color.LightGray)
-                    )
-                }
+    Row(modifier = Modifier.fillMaxWidth().height(88.dp).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+        Image(painter = painterResource(id = item.imageRes), contentDescription = item.name, modifier = Modifier.size(56.dp).clip(RoundedCornerShape(8.dp)), contentScale = ContentScale.Crop)
+
+        Column(modifier = Modifier.weight(1f).padding(start = 12.dp)) {
+            Text(item.name, fontSize = 14.sp, color = PrimaryText)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(item.subtitle, fontSize = 12.sp, color = SecondaryText)
+        }
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(onClick = onDecrease, modifier = Modifier.size(32.dp).border(1.dp, DividerColor, CircleShape)) {
+                Icon(Icons.Default.Remove, contentDescription = "Decrease")
             }
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            // name + subtitle + qty selector
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = item.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.Black
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(
-                    text = item.subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = DarkGray
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-
-                // quantity selector — calls the lambdas supplied by parent (which call the ViewModel)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Surface(
-                        modifier = Modifier.size(36.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        tonalElevation = 2.dp,
-                        color = Color(0xFFF2F2F2)
-                    ) {
-                        TextButton(onClick = onDecrease, contentPadding = PaddingValues(0.dp), modifier = Modifier.fillMaxSize()) {
-                            Text("-", style = MaterialTheme.typography.bodyLarge)
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Text(text = item.quantity.toString(), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Surface(
-                        modifier = Modifier.size(36.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        tonalElevation = 2.dp,
-                        color = PrimaryGreen.copy(alpha = 0.12f)
-                    ) {
-                        TextButton(onClick = onIncrease, contentPadding = PaddingValues(0.dp), modifier = Modifier.fillMaxSize()) {
-                            Text("+", color = PrimaryGreen, style = MaterialTheme.typography.bodyLarge)
-                        }
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            // price column
-            Column(horizontalAlignment = Alignment.End) {
-                Text(
-                    text = "$${"%.2f".format(item.price * item.quantity)}",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold
-                )
+            Text(item.quantity.toString(), modifier = Modifier.padding(horizontal = 8.dp))
+            IconButton(onClick = onIncrease, modifier = Modifier.size(32.dp).clip(CircleShape).background(PrimaryGreen)) {
+                Icon(Icons.Default.Add, contentDescription = "Increase", tint = Color.White)
             }
         }
 
-        // remove 'x' at top-right corner of the item card
-        IconButton(
-            onClick = onRemove,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(end = 8.dp, top = 8.dp)
-                .size(34.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "Remove",
-                tint = Color(0xFF9E9E9E)
-            )
-        }
+        Spacer(modifier = Modifier.width(8.dp))
+
+        IconButton(onClick = onRemove) { Icon(Icons.Default.Close, contentDescription = "Remove", tint = Color(0xFF9CA3AF)) }
+
+        Text(String.format("$%.2f", item.price), fontSize = 14.sp, modifier = Modifier.padding(start = 8.dp))
     }
 }
 
-/* ----------------- Bottom area ----------------- */
 @Composable
-private fun CartBottomBar(total: Double, onCheckout: () -> Unit, navController: NavController) {
-    Surface(
-        tonalElevation = 6.dp,
-        shadowElevation = 6.dp,
-        color = Color.White
-    ) {
-        Column {
-            Divider(thickness = 0.5.dp, color = MatteGray)
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Button that contains label + total pill on the right
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)) {
-                Button(
-                    onClick = onCheckout,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(28.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = "Go to Checkout", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onPrimary)
-                        Spacer(modifier = Modifier.weight(1f))
-                        // total pill
-                        Surface(
-                            tonalElevation = 0.dp,
-                            color = Color(0xFF2D8F5A),
-                            shape = RoundedCornerShape(20.dp),
-                            modifier = Modifier.height(36.dp)
-                        ) {
-                            Box(modifier = Modifier.padding(horizontal = 12.dp), contentAlignment = Alignment.Center) {
-                                Text(text = "$${"%.2f".format(total)}", color = Color.White, style = MaterialTheme.typography.bodyMedium)
-                            }
-                        }
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-            Divider(thickness = 0.5.dp, color = MatteGray)
-
-            // centralized bottom bar (navigation)
-            BottomBar(navController)
-        }
+private fun CartBottomBar(onNavigateTo: (route: String) -> Unit) {
+    NavigationBar(containerColor = Color.White) {
+        NavigationBarItem(selected = false, onClick = { onNavigateTo(Routes.HOME) }, icon = { Icon(Icons.Default.Home, contentDescription = "Shop") }, label = { Text("Shop") })
+        NavigationBarItem(selected = false, onClick = { onNavigateTo(Routes.EXPLORE) }, icon = { Icon(Icons.Default.Search, contentDescription = "Explore") }, label = { Text("Explore") })
+        NavigationBarItem(selected = true, onClick = { onNavigateTo(Routes.CART) }, icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "Cart") }, label = { Text("Cart") })
+        NavigationBarItem(selected = false, onClick = { onNavigateTo(Routes.FAVORITE) }, icon = { Icon(Icons.Default.Favorite, contentDescription = "Favourite") }, label = { Text("Favourite") })
+        NavigationBarItem(selected = false, onClick = { onNavigateTo(Routes.ACCOUNT) }, icon = { Icon(Icons.Default.AccountCircle, contentDescription = "Account") }, label = { Text("Account") })
     }
-}
-
-/* ---------------- Previews ---------------- */
-
-@Preview(showBackground = true, widthDp = 360, heightDp = 800)
-@Composable
-fun CartPreview() {
-    ProjectCS426Theme {
-        val fakeItems = listOf(
-            CartItemUi(id = "1", name = "Bell Pepper Red", subtitle = "1kg, Price", price = 4.99, imageRes = android.R.drawable.ic_menu_gallery, quantity = 1),
-            CartItemUi(id = "2", name = "Egg Chicken Red", subtitle = "4pcs, Price", price = 1.99, imageRes = android.R.drawable.ic_menu_gallery, quantity = 1),
-            CartItemUi(id = "3", name = "Organic Bananas", subtitle = "12kg, Price", price = 3.00, imageRes = android.R.drawable.ic_menu_gallery, quantity = 1),
-            CartItemUi(id = "4", name = "Ginger", subtitle = "250gm, Price", price = 2.99, imageRes = android.R.drawable.ic_menu_gallery, quantity = 1)
-        )
-
-        val nav = rememberNavController()
-        // preview with a lightweight fake ViewModel by passing a lambda adapters:
-        CartPreviewHost(nav = nav, items = fakeItems)
-    }
-}
-@Composable
-private fun CartPreviewHost(nav: NavController, items: List<CartItemUi>) {
-    var localItems by remember { mutableStateOf(items) }
-
-    val fakeVm = object {
-        val items: List<CartItemUi> get() = localItems
-        fun increaseQuantity(id: String) {
-            localItems = localItems.map { if (it.id == id) it.copy(quantity = it.quantity + 1) else it }
-        }
-        fun decreaseQuantity(id: String) {
-            localItems = localItems.mapNotNull {
-                if (it.id == id) {
-                    val newQty = it.quantity - 1
-                    if (newQty <= 0) null else it.copy(quantity = newQty)
-                } else it
-            }
-        }
-        fun removeItem(id: String) { localItems = localItems.filterNot { it.id == id } }
-        fun totalPrice(): Double = localItems.sumOf { it.price * it.quantity }
-    }
-
-    Cart(
-        navController = nav,
-        cartViewModel = object : CartViewModel() {
-            override val items = fakeVm.items
-            override fun increaseQuantity(id: String) = fakeVm.increaseQuantity(id)
-            override fun decreaseQuantity(id: String) = fakeVm.decreaseQuantity(id)
-            override fun removeItem(id: String) = fakeVm.removeItem(id)
-            override fun totalPrice(): Double = fakeVm.totalPrice()
-        }
-    )
 }

@@ -1,5 +1,6 @@
 package com.example.project_cs426.pages.product
 
+import android.app.Application
 import com.example.project_cs426.pages.product.ProductBox
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,16 +25,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
 import com.example.project_cs426.R
+import com.example.project_cs426.data.local.AppDatabase
 import com.example.project_cs426.ui.theme.MatteGray
 import kotlin.collections.chunked
 import com.example.project_cs426.model.FakeData.products
-
+import com.example.project_cs426.repository.CartRepository
+import com.example.project_cs426.viewmodel.HomeViewModel
 
 
 @Composable
-fun ProductsBySearchScreen(initQuery: String = "", navController: NavController){
+fun ProductsBySearchScreen(
+    initQuery: String = "",
+    navController: NavController,
+    viewModel: HomeViewModel = viewModel(
+        factory = viewModelFactory {
+            initializer {
+                val app = (this[APPLICATION_KEY] as Application)
+                val db = AppDatabase.getInstance(app)
+                HomeViewModel(CartRepository(db.cartDao()))
+            }
+        }
+    )){
     var query by remember { mutableStateOf(initQuery) }
     val filteredProducts = products.filter { it.name.contains(query, ignoreCase = true) }
     LazyColumn(
@@ -92,9 +110,16 @@ fun ProductsBySearchScreen(initQuery: String = "", navController: NavController)
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        ProductBox(rowItem[0])
+                        ProductBox(
+                            rowItem[0],
+                            onAddToCart = { viewModel.addToCart(it) }
+
+                        )
                         if (rowItem.size > 1) {
-                            ProductBox(rowItem[1])
+                            ProductBox(
+                                rowItem[1],
+                                onAddToCart = { viewModel.addToCart(it) }
+                            )
                         } else {
                             Spacer(modifier = Modifier.weight(1f))
                         }

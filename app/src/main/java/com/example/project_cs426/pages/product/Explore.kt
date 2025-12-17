@@ -37,7 +37,7 @@ fun Explore(navController: NavController) {
                 text = "Find Products",
                 fontWeight = FontWeight.Bold,
                 color = Black,
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(vertical = 20.dp)
             )
 

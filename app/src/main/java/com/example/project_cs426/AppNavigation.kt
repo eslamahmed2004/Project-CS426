@@ -6,51 +6,47 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.ecommerce.pages.account.AccountScreen
-import com.example.project_cs426.com.example.project_cs426.navigation.Routes
 import com.example.project_cs426.model.User
+import com.example.project_cs426.navigation.Routes
 import com.example.project_cs426.pages.auth.StartPage
 import com.example.project_cs426.pages.auth.location
 import com.example.project_cs426.pages.auth.login
 import com.example.project_cs426.pages.auth.onbording
 import com.example.project_cs426.pages.auth.register
 import com.example.project_cs426.pages.cart.Cart
-import com.example.project_cs426.pages.cart.CartItemUi
-import com.example.project_cs426.pages.cart.CartViewModel
 import com.example.project_cs426.pages.checkout.Checkout
 import com.example.project_cs426.pages.checkout.Error
 import com.example.project_cs426.pages.checkout.Success
-import com.example.project_cs426.pages.favourite.Favourite
-import com.example.project_cs426.pages.favourite.FavouriteViewModel
 import com.example.project_cs426.viewmodel.AuthViewModel
+import com.example.project_cs426.viewmodel.CartViewModel
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
     val cartViewModel: CartViewModel = viewModel()
-    val favouriteViewModel: FavouriteViewModel = viewModel()
     NavHost(
-        navController = navController, startDestination = Routes.startPage
+        navController = navController, startDestination = Routes.START
     ) {
-        composable(Routes.startPage) {
+        composable(Routes.START) {
             StartPage(navController)
         }
 
-        composable(Routes.onbording) {
+        composable(Routes.ONBOARDING) {
             onbording(navController)
         }
-        composable(Routes.location) {
+        composable(Routes.LOCATION) {
             location(navController)
         }
 
-        composable(Routes.login) {
+        composable(Routes.LOGIN) {
             login(navController)
         }
-        composable(Routes.signup) {
+        composable(Routes.REGISTER) {
             register(navController)
         }
 
 
 
-        composable(Routes.Account) {
+        composable(Routes.ACCOUNT) {
             // لو عندك ViewModel للّوجين
             val authViewModel: AuthViewModel = viewModel()
 
@@ -68,66 +64,31 @@ fun AppNavigation(navController: NavHostController) {
                 onAboutClick = { navController.navigate("about") },
                 onLogoutClick = { /* مفيش حاجة */ })
         }
-
-        // داخل AppNavigation composable، في composable(Routes.favourite) {...}
-        composable(Routes.favourite) {
-            Favourite(
-                navController = navController,
-                favouritesViewModel = favouriteViewModel,
-                onAddAllToCart = { favouriteItems ->
-                    // تحويل المفضلات إلى عناصر سلة (Cart)
-                    val cartItems = favouriteViewModel.toCartItems(favouriteItems)
-
-                    // إضافة العناصر إلى السلة عبر CartViewModel
-                    cartViewModel.addAllToCart(cartItems)
-
-                    // الانتقال إلى شاشة السلة
-                    navController.navigate(Routes.cart)
-                }
-            )
-        }
-
-
-
-        composable(Routes.cart) {
+        composable(Routes.CART) {
             Cart(
-                navController = navController,
-                cartViewModel = cartViewModel
-            )
+                cartViewModel = cartViewModel, onNavigateTo = { route ->
+                    navController.navigate(route)
+                })
         }
 
-        composable(Routes.checkout) {
+        /* ================= Checkout (Bottom Sheet UI) ================= */
+        composable(Routes.CHECKOUT) {
             Checkout(
-                total = cartViewModel.totalPrice(),            // total param name matches Checkout.kt
-                onDismiss = { navController.popBackStack() }, // close sheet / go back
-                onPlaceOrder = {
-                    // after placing order -> go to success screen
-                    navController.navigate(Routes.success) {
-                        // optional: adjust back stack if you want
-                        popUpTo(Routes.home) { inclusive = false }
-                    }
-                }
+                navController = navController, totalPrice = cartViewModel.getTotalPrice()
             )
         }
 
-        /* ==== Success / Error ==== */
-        composable(Routes.success) {
+        /* ================= Success / Place Order ================= */
+        composable(Routes.SUCCESS) {
             Success(navController = navController)
         }
 
-        composable(Routes.error) {
+        /* ================= Error ================= */
+        composable(Routes.ERROR) {
             Error(
-                onDismiss = { navController.popBackStack() },
-                onRetry = {
+                navController = navController, onRetry = {
                     navController.popBackStack()
-                    navController.navigate(Routes.checkout)
-                },
-                onBackHome = {
-                    navController.navigate(Routes.home) {
-                        popUpTo(Routes.home) { inclusive = true }
-                    }
-                }
-            )
+                })
         }
 
 
