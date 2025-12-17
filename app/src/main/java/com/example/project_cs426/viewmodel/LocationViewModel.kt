@@ -13,9 +13,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.lang.Exception
 
-/**
- * LocationViewModel — يعرّف countries كـ StateFlow حتى يعمل collectAsState() بدون initial.
- */
 class LocationViewModel(
     private val api: CountriesApi = RetrofitClient.api
 ) : ViewModel() {
