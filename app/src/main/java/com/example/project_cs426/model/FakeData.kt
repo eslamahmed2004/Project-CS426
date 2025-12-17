@@ -13,9 +13,9 @@ object FakeData {
             price = 4.99,
             description = "Fresh organic bananas rich in nutrients.",
             weight = "1kg",
-            category = "Fruit" ,
-            brand = "Organic Farm"
-        )
+            brand = "Organic Farm",
+            categoryId = 1 ,
+            )
     )
 
     val sampleFavourites = listOf(
@@ -37,19 +37,19 @@ object FakeData {
             category = "Fruits",
             image = R.drawable.fruits_category,
             color = 0xFF53B175,
-            products = products.filter { it.category == "Fruit" }
+            products = products.filter { it.categoryId == 1 }
         ),
         CategoryProducts(
             category = "Vegetables",
             image = R.drawable.fruits_category,
             color = 0xFFF8A44C,
-            products = products.filter { it.category == "Fruit" }
+            products = products.filter { it.categoryId == 2 }
         ),
         CategoryProducts(
             category = "Dairy",
             image = R.drawable.fruits_category,
             color = 0xFFF7A593,
-            products = products.filter { it.category == "Fruit" }
+            products = products.filter { it.categoryId == 3 }
         ),
 
     )

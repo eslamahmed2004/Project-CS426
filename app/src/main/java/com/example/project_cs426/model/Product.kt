@@ -7,6 +7,7 @@ data  class Product(
     val price: Double,
     val description: String,
     val weight: String = "1kg",
-    val category: String,
-    val brand: String
+    val brand: String,
+    val categoryId: Int
+
 )

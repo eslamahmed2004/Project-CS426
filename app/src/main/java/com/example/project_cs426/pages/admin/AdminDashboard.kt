@@ -29,9 +29,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.project_cs426.R
 import com.example.project_cs426.data.local.AppDatabase
 import com.example.project_cs426.model.Product
+import com.example.project_cs426.model.ProductWithCategory
+import com.example.project_cs426.pages.admin.dialog.AddCategoryDialog
 import com.example.project_cs426.pages.admin.dialog.AddProductDialog
 import com.example.project_cs426.pages.admin.dialog.EditProductDialog
 import com.example.project_cs426.viewmodel.AdminViewModel
@@ -41,11 +42,15 @@ import com.example.project_cs426.viewmodel.AdminViewModel
 fun AdminDashboard(
     productCount: Int,
     userCount: Int,
-    products: List<Product>,
+    products: List<ProductWithCategory>,
+    onAddCategory: () -> Unit,
     onAddProduct: () -> Unit,
-    onDeleteProduct: (Product) -> Unit,
-    onUpdateProduct: (Product) -> Unit
+    onDeleteProduct: (Int) -> Unit,
+    onUpdateProduct: (Int) -> Unit
 ) {
+
+    var showCategoryDialog by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -68,6 +73,18 @@ fun AdminDashboard(
             AdminCard("Users", userCount.toString())
         }
 
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+
+        Button(
+            onClick =onAddCategory,
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+        ) {
+            Text("Add Category")
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
@@ -84,8 +101,8 @@ fun AdminDashboard(
             items(products) { product ->
                 AdminProductItem(
                     product = product,
-                    onDelete = { onDeleteProduct(product) },
-                    onEdit = { onUpdateProduct(product) }
+                    onDelete = { onDeleteProduct(product.id) },
+                    onEdit = { onUpdateProduct(product.id) }
                 )
             }
         }
@@ -104,40 +121,54 @@ fun AdminDashboardRoute(
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return AdminViewModel(
                     productDao = db.productDao(),
-                    userDao = db.userDao()
+                    userDao = db.userDao(),
+                    categoryDao = db.categoryDao()
                 ) as T
             }
         }
     )
     val productCount = viewModel.productCount.collectAsState()
     val userCount = viewModel.userCount.collectAsState()
-    val products = viewModel.products.collectAsState()
+    val products = viewModel.productsWithCategory.collectAsState()
+    val categories by viewModel.categories.collectAsState()
+
+
 
     var showDialog by remember { mutableStateOf(false) }
     var editingProduct by remember { mutableStateOf<Product?>(null) }
+    var showCategoryDialog by remember { mutableStateOf(false) }
+
+
+
+
+    if (showCategoryDialog) {
+        AddCategoryDialog(
+            onDismiss = { showCategoryDialog = false },
+            onAdd = { name ->
+                viewModel.addCategory(name)
+                showCategoryDialog = false
+            }
+        )
+    }
+
+
 
     // ➕ Add Dialog
 
     if (showDialog) {
         AddProductDialog(
+            categories = categories,
             onDismiss = { showDialog = false },
-            onAdd = { name,price ->
-                    val product = Product(
-                        id = 0,
-                        name = name,
-                        image = R.drawable.apple,
-                        price = price,
-                        description = "No description",
-                        weight = "1kg",
-                        category = "General",
-                        brand = "Admin"
-                    )
-
-
-                viewModel.addProduct(product)
+            onAdd = { name, price, categoryId ->
+                viewModel.addProduct(
+                    name = name,
+                    price = price,
+                    categoryId = categoryId
+                )
                 showDialog = false
             }
         )
+
     }
 
 
@@ -158,12 +189,17 @@ fun AdminDashboardRoute(
         productCount = productCount.value,
         userCount = userCount.value,
         products = products.value,
+        onAddCategory = { showCategoryDialog = true },
         onAddProduct = { showDialog = true },
-        onDeleteProduct = { viewModel.deleteProduct(it) },
-        onUpdateProduct = { product ->
-            editingProduct = product
+        onDeleteProduct = { productId ->
+            viewModel.deleteProductById(productId)
+        },
+        onUpdateProduct = { productId ->
+            // لاحقًا نجيب المنتج ونعمله Edit
         }
     )
+
+
 }
 
 
