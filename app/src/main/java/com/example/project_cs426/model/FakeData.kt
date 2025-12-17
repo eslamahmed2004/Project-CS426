@@ -18,6 +18,9 @@ object FakeData {
             )
     )
 
+
+
+
     val sampleFavourites = listOf(
         FavouriteItem(1, "Sprite Can", "325ml, Price", "$1.50", R.drawable.sprite_can),
         FavouriteItem(2, "Diet Coke", "355ml, Price", "$1.99", R.drawable.diet_coke),
