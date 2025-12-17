@@ -78,19 +78,49 @@ object FakeData {
             brand = "Cheesy Delight"
         )
     )
-    val sampleFavourites = listOf(
-        FavouriteItemUi(
-            id = "1",
-            name = "Sprite Can",
-            subtitle = "325ml, Price",
-            price = 1.50,
-            imageRes = R.drawable.sprite_can
-        ),
-        FavouriteItemUi(id = "2", name = "Diet Coke", subtitle = "355ml, Price", price = 1.99, imageRes = R.drawable.diet_coke),
-        FavouriteItemUi(id = "3", name = "Apple & Grape Juice", subtitle = "2L, Price", price = 15.50, imageRes = R.drawable.apple_grape_juice),
-        FavouriteItemUi(id = "4", name = "Coca Cola Can", subtitle = "325ml, Price", price = 4.99, imageRes = R.drawable.coca_cola_can),
-        FavouriteItemUi(id = "5", name = "Pepsi Can", subtitle = "330ml, Price", price = 4.99, imageRes = R.drawable.pepsi_can)
-    )
+    val sampleFavourites =
+        listOf(
+            FavouriteItemUi(
+                uid = null,
+                productId = 1,
+                name = "Sprite Can",
+                subtitle = "325ml, Price",
+                price = 1.50,
+                imageRes = R.drawable.sprite_can
+            ),
+            FavouriteItemUi(
+                uid = null,
+                productId = 2,
+                name = "Diet Coke",
+                subtitle = "355ml, Price",
+                price = 1.99,
+                imageRes = R.drawable.diet_coke
+            ),
+            FavouriteItemUi(
+                uid = null,
+                productId = 3,
+                name = "Apple & Grape Juice",
+                subtitle = "2L, Price",
+                price = 15.50,
+                imageRes = R.drawable.apple_grape_juice
+            ),
+            FavouriteItemUi(
+                uid = null,
+                productId = 4,
+                name = "Coca Cola Can",
+                subtitle = "325ml, Price",
+                price = 4.99,
+                imageRes = R.drawable.coca_cola_can
+            ),
+            FavouriteItemUi(
+                uid = null,
+                productId = 5,
+                name = "Pepsi Can",
+                subtitle = "330ml, Price",
+                price = 4.99,
+                imageRes = R.drawable.pepsi_can
+            )
+        )
 
     val categories = listOf(
         CategoryProducts(

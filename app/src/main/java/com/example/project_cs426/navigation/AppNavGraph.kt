@@ -16,7 +16,7 @@ import com.example.project_cs426.pages.checkout.Checkout
 import com.example.project_cs426.pages.checkout.Error
 import com.example.project_cs426.pages.checkout.Success
 import com.example.project_cs426.pages.favourite.Favourite
-import com.example.project_cs426.pages.favourite.FavouritesViewModel
+import com.example.project_cs426.pages.favourite.FavouriteViewModel
 
 import com.example.project_cs426.pages.home.HomeScreen
 import com.example.project_cs426.pages.product.Explore
@@ -28,7 +28,7 @@ import com.example.project_cs426.viewmodel.ProductViewModel
 @Composable
 fun AppNavGraph(navController: NavHostController) {
     val cartViewModel: CartViewModel = viewModel()
-    val favouritesViewModel: FavouritesViewModel = viewModel()
+    val favouriteViewModel: FavouriteViewModel = viewModel()
 
     val cartVm: CartViewModel = viewModel()
 
@@ -60,25 +60,17 @@ fun AppNavGraph(navController: NavHostController) {
         }
 
         composable(Routes.favourite) {
-
             Favourite(
                 navController = navController,
-                favouritesViewModel = favouritesViewModel,
+                favouritesViewModel = favouriteViewModel,
                 onAddAllToCart = { favouriteItems ->
+                    // تحويل المفضلات إلى عناصر سلة (Cart)
+                    val cartItems = favouriteViewModel.toCartItems(favouriteItems)
 
-                    val cartItems = favouriteItems.map { fav ->
-                        CartItemUi(
-                            id = fav.id,
-                            name = fav.name,
-                            subtitle = fav.subtitle,
-                            price = fav.price,
-                            imageRes = fav.imageRes,
-                            quantity = 1
-                        )
-                    }
-
+                    // إضافة العناصر إلى السلة عبر CartViewModel
                     cartViewModel.addAllToCart(cartItems)
 
+                    // الانتقال إلى شاشة السلة
                     navController.navigate(Routes.cart)
                 }
             )

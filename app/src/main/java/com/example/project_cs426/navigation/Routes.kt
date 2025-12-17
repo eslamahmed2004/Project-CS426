@@ -20,6 +20,8 @@ object Routes {
     const val Privacy= "privacy"
 
     const val Account = "account"
+    const val ADMIN_DASHBOARD = "ADMIN_DASHBOARD"
+
     const val   Explorer = "explorer"
     const val   Register = "register"
     const val   PRODUCT_CATEGORY = "PRODUCT_CATEGORY"

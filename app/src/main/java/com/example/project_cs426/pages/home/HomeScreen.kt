@@ -39,7 +39,7 @@ import androidx.navigation.NavController
 import com.example.project_cs426.R
 import com.example.project_cs426.data.local.LocationPreferences
 import com.example.project_cs426.model.FakeData.categories
-import com.example.project_cs426.navigation.Routes
+import com.example.project_cs426.com.example.project_cs426.navigation.Routes
 import com.example.project_cs426.pages.product.ProductBox
 import com.example.project_cs426.pages.product.SearchBar
 import com.example.project_cs426.ui.theme.Black
@@ -232,7 +232,7 @@ fun ShowSliderCategory(navController: NavController) {
                 style = MaterialTheme.typography.bodySmall,
                 color = PrimaryGreen,
                 modifier = Modifier.clickable {
-                    navController.navigate(Routes.EXPLORE)
+                    navController.navigate(Routes.Explorer)
                 }
             )
         }

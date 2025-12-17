@@ -15,7 +15,6 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.compose.rememberNavController
-import com.example.project_cs426.pages.cart.Cart
 import com.example.project_cs426.pages.favourite.Favourite
 import com.example.project_cs426.ui.theme.ProjectCS426Theme
 
@@ -37,7 +36,7 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .padding(innerPadding)
                     ) {
-                        Cart(navController = navController)
+                        AppNavigation(navController)
                     }
                 }
             }

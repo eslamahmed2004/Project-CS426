@@ -47,15 +47,15 @@ object FakeCartData {
     )
 }
 
-class CartViewModel : ViewModel() {
+open class CartViewModel : ViewModel() {
 
     // MutableStateList so Compose recomposes when items change
     private val _items = mutableStateListOf<CartItemUi>().apply {
         addAll(FakeCartData.sample) // <-- استبدل أو احذف لو عايز البداية فاضية
     }
-    val items: List<CartItemUi> get() = _items
+    open val items: List<CartItemUi> get() = _items
 
-    fun increaseQuantity(itemId: String) {
+    open fun increaseQuantity(itemId: String) {
         val index = _items.indexOfFirst { it.id == itemId }
         if (index != -1) {
             val it = _items[index]
@@ -63,7 +63,7 @@ class CartViewModel : ViewModel() {
         }
     }
 
-    fun decreaseQuantity(itemId: String) {
+    open fun decreaseQuantity(itemId: String) {
         val index = _items.indexOfFirst { it.id == itemId }
         if (index != -1) {
             val it = _items[index]
@@ -72,7 +72,7 @@ class CartViewModel : ViewModel() {
         }
     }
 
-    fun removeItem(itemId: String) {
+    open fun removeItem(itemId: String) {
         _items.removeAll { it.id == itemId }
     }
 
@@ -91,7 +91,7 @@ class CartViewModel : ViewModel() {
         }
     }
 
-    fun totalPrice(): Double {
+    open fun totalPrice(): Double {
         val sum = _items.sumOf { it.price * it.quantity }
         return (round(sum * 100)) / 100.0
     }

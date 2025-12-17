@@ -1,13 +1,10 @@
 package com.example.project_cs426
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import com.example.ecommerce.pages.account.AccountScreen
 import com.example.project_cs426.com.example.project_cs426.navigation.Routes
 import com.example.project_cs426.model.User
@@ -23,16 +20,13 @@ import com.example.project_cs426.pages.checkout.Checkout
 import com.example.project_cs426.pages.checkout.Error
 import com.example.project_cs426.pages.checkout.Success
 import com.example.project_cs426.pages.favourite.Favourite
-import com.example.project_cs426.pages.favourite.FavouritesViewModel
-import com.example.project_cs426.pages.product.ProductDetailsScreen
+import com.example.project_cs426.pages.favourite.FavouriteViewModel
 import com.example.project_cs426.viewmodel.AuthViewModel
-import com.example.project_cs426.viewmodel.ProductViewModel
-import com.example.project_cs426.viewmodel.UserViewModel
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
     val cartViewModel: CartViewModel = viewModel()
-    val favouritesViewModel: FavouritesViewModel = viewModel()
+    val favouriteViewModel: FavouriteViewModel = viewModel()
     NavHost(
         navController = navController, startDestination = Routes.startPage
     ) {
@@ -75,30 +69,25 @@ fun AppNavigation(navController: NavHostController) {
                 onLogoutClick = { /* مفيش حاجة */ })
         }
 
+        // داخل AppNavigation composable، في composable(Routes.favourite) {...}
         composable(Routes.favourite) {
-
             Favourite(
                 navController = navController,
-                favouritesViewModel = favouritesViewModel,
+                favouritesViewModel = favouriteViewModel,
                 onAddAllToCart = { favouriteItems ->
+                    // تحويل المفضلات إلى عناصر سلة (Cart)
+                    val cartItems = favouriteViewModel.toCartItems(favouriteItems)
 
-                    val cartItems = favouriteItems.map { fav ->
-                        CartItemUi(
-                            id = fav.id,
-                            name = fav.name,
-                            subtitle = fav.subtitle,
-                            price = fav.price,
-                            imageRes = fav.imageRes,
-                            quantity = 1
-                        )
-                    }
-
+                    // إضافة العناصر إلى السلة عبر CartViewModel
                     cartViewModel.addAllToCart(cartItems)
 
+                    // الانتقال إلى شاشة السلة
                     navController.navigate(Routes.cart)
                 }
             )
         }
+
+
 
         composable(Routes.cart) {
             Cart(
