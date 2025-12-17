@@ -13,7 +13,7 @@ import com.example.project_cs426.pages.favourite.FavouriteItemUi
  */
 object FakeData {
 
-    val products = listOf(
+    val products = mutableListOf(
         Product(
             id = 1,
             name = "Organic Bananas",
@@ -87,7 +87,7 @@ object FakeData {
     )
 
     // sample favourites must match FavouriteItemUi constructor:
-    val sampleFavourites = listOf(
+    val sampleFavourites = mutableListOf(
         FavouriteItemUi(
             uid = null,
             productId = 1,
@@ -130,7 +130,7 @@ object FakeData {
         )
     )
 
-    val categories = listOf(
+    val categories = mutableListOf(
         CategoryProducts(
             category = "Fruits",
             image = R.drawable.fruits_category,
