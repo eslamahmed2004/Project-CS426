@@ -11,12 +11,10 @@ fun ProductEntity.toProduct(): Product {
         price = price,
         description = description,
         weight = weight,
-        category = category,
-        brand = brand
+        brand = brand,
+        categoryId = categoryId
     )
 }
-
-
 
 fun Product.toEntity(): ProductEntity {
     return ProductEntity(
@@ -26,7 +24,7 @@ fun Product.toEntity(): ProductEntity {
         price = price,
         description = description,
         weight = weight,
-        category = category,
-        brand = brand
+        brand = brand,
+        categoryId = categoryId
     )
 }

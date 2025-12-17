@@ -24,12 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.project_cs426.model.Product
+import com.example.project_cs426.model.ProductWithCategory
 import com.example.project_cs426.ui.theme.PrimaryGreen
 
 @Composable
 fun AdminProductItem(
-    product: Product,
+    product: ProductWithCategory,
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -53,6 +53,8 @@ fun AdminProductItem(
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
+                Text(product.categoryName, color = Color.Gray)
+
             }
 
             IconButton(
