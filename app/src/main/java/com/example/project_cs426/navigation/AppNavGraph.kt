@@ -93,20 +93,20 @@ fun AppNavGraph(navController: NavHostController) {
 
 
         composable(Routes.CART) {
-            val cartVm: CartViewModel = viewModel()
-            Cart(cartVm) { navController.navigate(it) }
+            Cart { navController.navigate(it) }
         }
+
 
         composable(Routes.FAVORITE) {
-            val cartVm: CartViewModel = viewModel()
-            Favourite(cartVm) { navController.navigate(it) }
+            Favourite { navController.navigate(it) }
         }
 
 
-        composable(Routes.CHECKOUT) {
-            val cartVm: CartViewModel = viewModel()
-            Checkout(navController, cartVm.getTotalPrice())
-        }
+
+//        composable(Routes.CHECKOUT) {
+//            val cartVm: CartViewModel = viewModel()
+//            Checkout(navController, cartVm.getTotalPrice())
+//        }
 
         composable(Routes.SUCCESS) { Success(navController) }
         composable(Routes.ERROR) { Error(navController) }

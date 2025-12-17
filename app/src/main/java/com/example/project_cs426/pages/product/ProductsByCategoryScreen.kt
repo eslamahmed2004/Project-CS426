@@ -1,5 +1,6 @@
 package com.example.project_cs426.pages.product
 
+import android.app.Application
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,15 +24,33 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
 import com.example.project_cs426.R
+import com.example.project_cs426.data.local.AppDatabase
 import com.example.project_cs426.model.FakeData.categories
 import com.example.project_cs426.pages.product.ProductBox
+import com.example.project_cs426.repository.CartRepository
 import com.example.project_cs426.ui.theme.Black
 import com.example.project_cs426.ui.theme.MatteGray
+import com.example.project_cs426.viewmodel.HomeViewModel
 
 @Composable
-fun ProductsByCategoryScreen(categoryName: String, navController: NavController) {
+fun ProductsByCategoryScreen(
+    categoryName: String,
+    navController: NavController,
+    viewModel: HomeViewModel = viewModel(
+        factory = viewModelFactory {
+            initializer {
+                val app = (this[APPLICATION_KEY] as Application)
+                val db = AppDatabase.getInstance(app)
+                HomeViewModel(CartRepository(db.cartDao()))
+            }
+        }
+    )) {
 
     val category = categories.firstOrNull { it.category == categoryName }
 
@@ -82,10 +101,16 @@ fun ProductsByCategoryScreen(categoryName: String, navController: NavController)
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            ProductBox(rowItems[0])
+                            ProductBox(
+                                rowItems[0],
+                                onAddToCart = { viewModel.addToCart(it) }
+                            )
 
                             if (rowItems.size > 1) {
-                                ProductBox(rowItems[1])
+                                ProductBox(
+                                    rowItems[1],
+                                    onAddToCart = { viewModel.addToCart(it) }
+                                )
                             } else {
                                 Spacer(modifier = Modifier.weight(1f))
                             }

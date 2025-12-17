@@ -1,32 +1,16 @@
 package com.example.project_cs426.pages.home
 
+import android.app.Application
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,36 +19,48 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
 import com.example.project_cs426.R
+import com.example.project_cs426.data.local.AppDatabase
 import com.example.project_cs426.data.local.LocationPreferences
 import com.example.project_cs426.model.FakeData.categories
 import com.example.project_cs426.navigation.Routes
 import com.example.project_cs426.pages.product.ProductBox
 import com.example.project_cs426.pages.product.SearchBar
-import com.example.project_cs426.ui.theme.Black
-import com.example.project_cs426.ui.theme.DarkGray
-import com.example.project_cs426.ui.theme.PrimaryGreen
-
+import com.example.project_cs426.repository.CartRepository
+import com.example.project_cs426.ui.theme.*
+import com.example.project_cs426.viewmodel.HomeViewModel
 
 @Composable
-fun HomeScreen(navController: NavController,
+fun HomeScreen(
+    navController: NavController,
+    viewModel: HomeViewModel = viewModel(
+        factory = viewModelFactory {
+            initializer {
+                val app = (this[APPLICATION_KEY] as Application)
+                val db = AppDatabase.getInstance(app)
+                HomeViewModel(CartRepository(db.cartDao()))
+            }
+        }
+    )
 ) {
     val context = LocalContext.current
     val locationPrefs = remember { LocationPreferences(context) }
-
     val country by locationPrefs.country.collectAsState(initial = "")
     val city by locationPrefs.city.collectAsState(initial = "")
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
-
     ) {
         item {
             Header(
-                    selectedCountry = country,
-                    selectedCity = city
+                selectedCountry = country,
+                selectedCity = city
             )
         }
 
@@ -85,7 +81,7 @@ fun HomeScreen(navController: NavController,
         }
 
         item {
-            ShowSliderProducts(navController)
+            ShowSliderProducts(navController, viewModel)  // ← بعت الـ viewModel
         }
 
         item {
@@ -93,12 +89,12 @@ fun HomeScreen(navController: NavController,
         }
     }
 }
+
 @Composable
 fun Header(
     selectedCountry: String,
     selectedCity: String
 ) {
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -110,18 +106,14 @@ fun Header(
             contentDescription = "Carrot",
             modifier = Modifier.size(30.dp)
         )
-
         Spacer(modifier = Modifier.height(6.dp))
-
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painter = painterResource(R.drawable.location),
                 contentDescription = "location",
                 modifier = Modifier.size(20.dp)
             )
-
             Spacer(modifier = Modifier.width(6.dp))
-
             Text(
                 text = if (selectedCountry.isNotEmpty() && selectedCity.isNotEmpty())
                     "$selectedCity, $selectedCountry"
@@ -131,7 +123,6 @@ fun Header(
                 fontWeight = FontWeight.Bold
             )
         }
-
     }
 }
 
@@ -160,18 +151,16 @@ fun BannerCarousel() {
             )
         }
     }
-
     Spacer(modifier = Modifier.height(16.dp))
 }
 
-
-
 @Composable
-fun ShowSliderProducts(navController: NavController) {
+fun ShowSliderProducts(
+    navController: NavController,
+    viewModel: HomeViewModel  // ← استقبله هنا
+) {
     Column(modifier = Modifier.fillMaxWidth()) {
-
         categories.take(2).forEach { categoryData ->
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -184,7 +173,6 @@ fun ShowSliderProducts(navController: NavController) {
                     style = MaterialTheme.typography.titleMedium,
                     color = Black
                 )
-
                 Text(
                     text = "See all",
                     fontWeight = FontWeight.Bold,
@@ -200,10 +188,12 @@ fun ShowSliderProducts(navController: NavController) {
                 contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
                 items(categoryData.products.take(10)) { product ->
-                    ProductBox(product)
+                    ProductBox(
+                        product = product,
+                        onAddToCart = { viewModel.addToCart(it) }
+                    )
                 }
             }
-
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
@@ -212,7 +202,6 @@ fun ShowSliderProducts(navController: NavController) {
 @Composable
 fun ShowSliderCategory(navController: NavController) {
     Column {
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -225,7 +214,6 @@ fun ShowSliderCategory(navController: NavController) {
                 style = MaterialTheme.typography.titleMedium,
                 color = Black
             )
-
             Text(
                 text = "See all",
                 fontWeight = FontWeight.Bold,
@@ -236,9 +224,7 @@ fun ShowSliderCategory(navController: NavController) {
                 }
             )
         }
-
         Spacer(modifier = Modifier.height(8.dp))
-
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(horizontal = 16.dp)
@@ -268,9 +254,7 @@ fun ShowSliderCategory(navController: NavController) {
                             contentDescription = cat.category,
                             modifier = Modifier.size(90.dp)
                         )
-
                         Spacer(modifier = Modifier.width(8.dp))
-
                         Text(
                             text = cat.category,
                             maxLines = 1,
@@ -282,7 +266,6 @@ fun ShowSliderCategory(navController: NavController) {
                 }
             }
         }
-
         Spacer(modifier = Modifier.height(24.dp))
     }
 }
