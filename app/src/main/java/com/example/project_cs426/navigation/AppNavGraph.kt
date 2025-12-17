@@ -1,7 +1,6 @@
 package com.example.project_cs426.navigation
 
 import androidx.compose.runtime.Composable
-import com.example.project_cs426.com.example.project_cs426.navigation.Routes
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -19,136 +18,118 @@ import com.example.project_cs426.pages.auth.login
 import com.example.project_cs426.pages.auth.onbording
 import com.example.project_cs426.pages.auth.register
 import com.example.project_cs426.pages.cart.Cart
-import com.example.project_cs426.pages.cart.CartViewModel
 import com.example.project_cs426.pages.checkout.Checkout
 import com.example.project_cs426.pages.checkout.Error
 import com.example.project_cs426.pages.checkout.Success
 import com.example.project_cs426.pages.favourite.Favourite
-import com.example.project_cs426.pages.favourite.FavouriteViewModel
 import com.example.project_cs426.pages.home.HomeScreen
 import com.example.project_cs426.pages.product.Explore
 import com.example.project_cs426.pages.product.ProductDetailsScreen
 import com.example.project_cs426.pages.product.ProductsByCategoryScreen
 import com.example.project_cs426.pages.product.ProductsBySearchScreen
 import com.example.project_cs426.viewmodel.AuthViewModel
-
+import com.example.project_cs426.viewmodel.CartViewModel
 import com.example.project_cs426.viewmodel.ProductViewModel
 
 @Composable
-fun AppNavGraph(navController: NavHostController)  {
-    val cartViewModel: CartViewModel = viewModel()
-    val favouriteViewModel: FavouriteViewModel = viewModel()
+fun AppNavGraph(navController: NavHostController) {
+
     NavHost(
-        navController = navController, startDestination = Routes.startPage
+        navController = navController,
+        startDestination = Routes.START
     ) {
-        composable(Routes.startPage) {
-            StartPage(navController)
-        }
 
-        composable(Routes.onbording) {
-            onbording(navController)
-        }
-        composable(Routes.location) {
-            location(navController)
-        }
-
-        composable(Routes.login) {
-            login(navController)
-        }
-        composable(Routes.signup) {
-            register(navController)
-        }
+        composable(Routes.START) { StartPage(navController) }
+        composable(Routes.ONBOARDING) { onbording(navController) }
+        composable(Routes.LOCATION) { location(navController) }
+        composable(Routes.LOGIN) { login(navController) }
+        composable(Routes.REGISTER) { register(navController) }
 
 
 
-        composable(Routes.Account) {
-            // لو عندك ViewModel للّوجين
-            val authViewModel: AuthViewModel = viewModel()
+
+        composable(Routes.ADMIN_DASHBOARD) {
+            AdminDashboardRoute(navController)
+        }
+
+
+        composable(Routes.HOME) {
+            HomeScreen(navController)
+        }
+
+        composable(Routes.EXPLORE) {
+            Explore(navController = navController)
+        }
+
+        composable(
+            route = Routes.PRODUCT_CATEGORY,
+            arguments = listOf(navArgument("categoryName") { type = NavType.StringType })
+        ) {
+            val category = it.arguments?.getString("categoryName") ?: ""
+            ProductsByCategoryScreen(category, navController)
+        }
+
+        composable(
+            route = Routes.PRODUCT_SEARCH,
+            arguments = listOf(navArgument("query") { type = NavType.StringType })
+        ) {
+            val query = it.arguments?.getString("query") ?: ""
+            ProductsBySearchScreen(query, navController)
+        }
+
+        composable(
+            route = Routes.PRODUCT_DETAILS,
+            arguments = listOf(navArgument("productId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val productVm: ProductViewModel = viewModel()
+            val id = backStackEntry.arguments?.getInt("productId") ?: 0
+
+            LaunchedEffect(id) {
+                productVm.loadProduct(id)
+            }
+
+            ProductDetailsScreen(navController, productVm)
+        }
+
+
+        composable(Routes.CART) {
+            Cart { navController.navigate(it) }
+        }
+
+
+//        composable(Routes.FAVORITE) {
+//            Favourite { navController.navigate(it) }
+//        }
+//
+
+
+//        composable(Routes.CHECKOUT) {
+//            val cartVm: CartViewModel = viewModel()
+//            Checkout(navController, cartVm.getTotalPrice())
+//        }
+//
+//        composable(Routes.SUCCESS) { Success(navController) }
+//        composable(Routes.ERROR) { Error(navController) }
+
+
+        composable(Routes.ACCOUNT) {
+            val authVm: AuthViewModel = viewModel()
 
             AccountScreen(
                 user = User(
-                    name = authViewModel.username.value,
-                    email = authViewModel.email.value,
+                    name = authVm.username.value,
+                    email = authVm.email.value,
                     image = R.drawable.screenshot
                 ),
-                onOrdersClick = { navController.navigate("orders") },
-                onMyDetailsClick = { navController.navigate("myDetails") },
-                onAddressClick = { navController.navigate("address") },
-                onPaymentMethodsClick = { navController.navigate("paymentMethods") },
-                onPromoCodeClick = { navController.navigate("promoCode") },
-                onAboutClick = { navController.navigate("about") },
-                onLogoutClick = { /* مفيش حاجة */ })
-        }
-
-        // داخل AppNavigation composable، في composable(Routes.favourite) {...}
-        composable(Routes.favourite) {
-            Favourite(
-                navController = navController,
-                favouritesViewModel = favouriteViewModel,
-                onAddAllToCart = { favouriteItems ->
-                    // تحويل المفضلات إلى عناصر سلة (Cart)
-                    val cartItems = favouriteViewModel.toCartItems(favouriteItems)
-
-                    // إضافة العناصر إلى السلة عبر CartViewModel
-                    cartViewModel.addAllToCart(cartItems)
-
-                    // الانتقال إلى شاشة السلة
-                    navController.navigate(Routes.cart)
-                }
+                onOrdersClick = {},
+                onMyDetailsClick = {},
+                onAddressClick = {},
+                onPaymentMethodsClick = {},
+                onPromoCodeClick = {},
+                onAboutClick = {},
+                onLogoutClick = {}
             )
         }
-
-
-
-        composable(Routes.cart) {
-            Cart(
-                navController = navController,
-                cartViewModel = cartViewModel
-            )
-        }
-
-        composable(Routes.checkout) {
-            Checkout(
-                total = cartViewModel.totalPrice(),            // total param name matches Checkout.kt
-                onDismiss = { navController.popBackStack() }, // close sheet / go back
-                onPlaceOrder = {
-                    // after placing order -> go to success screen
-                    navController.navigate(Routes.success) {
-                        // optional: adjust back stack if you want
-                        popUpTo(Routes.home) { inclusive = false }
-                    }
-                }
-            )
-        }
-
-        /* ==== Success / Error ==== */
-        composable(Routes.success) {
-            Success(navController = navController)
-        }
-
-        composable(Routes.error) {
-            Error(
-                onDismiss = { navController.popBackStack() },
-                onRetry = {
-                    navController.popBackStack()
-                    navController.navigate(Routes.checkout)
-                },
-                onBackHome = {
-                    navController.navigate(Routes.home) {
-                        popUpTo(Routes.home) { inclusive = true }
-                    }
-                }
-            )
-        }
-
-
-//
-//        composable("orders") { OrdersScreen() }
-//        composable("myDetails") { MyDetailsScreen() }
-//        composable("address") { AddressScreen() }
-//        composable("paymentMethods") { PaymentScreen() }
-//        composable("promoCode") { PromoScreen() }
-//        composable("about") { AboutScreen() }
 
 
     }

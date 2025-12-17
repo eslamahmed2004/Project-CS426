@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.project_cs426.R
-import com.example.project_cs426.com.example.project_cs426.navigation.Routes
+import com.example.project_cs426.navigation.Routes
 import com.example.project_cs426.ui.theme.PrimaryGreen
 import com.example.project_cs426.viewmodel.AuthViewModel
 
@@ -188,13 +188,13 @@ fun login(
                 onClick = {
                     viewModel.login(
                         onSuccessUser = {
-                            navController.navigate(Routes.home) {
-                                popUpTo(Routes.login) { inclusive = true }
+                            navController.navigate(Routes.HOME) {
+                                popUpTo(Routes.LOGIN) { inclusive = true }
                             }
                         },
                         onSuccessAdmin = {
                             navController.navigate(Routes.ADMIN_DASHBOARD) {
-                                popUpTo(Routes.login) { inclusive = true }
+                                popUpTo(Routes.LOGIN) { inclusive = true }
                             }
                         },
                         onError = { msg ->
@@ -230,7 +230,7 @@ fun login(
                     text = "Signup",
                     color = PrimaryGreen,
                     modifier = Modifier.clickable {
-                        navController?.navigate(Routes.Register)
+                        navController?.navigate(Routes.REGISTER)
                     }
                 )
             }

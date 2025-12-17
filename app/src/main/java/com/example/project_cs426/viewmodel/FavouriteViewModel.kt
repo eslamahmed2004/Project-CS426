@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.project_cs426.data.repository.FavouriteRepository
-import com.example.project_cs426.pages.cart.CartItemUi
+//import com.example.project_cs426.pages.cart.CartItemUi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -88,18 +88,18 @@ class FavouriteViewModel(
     }
 
     /* -------- Favourite → Cart -------- */
-    fun toCartItems(list: List<FavouriteItemUi>): List<CartItemUi> {
-        return list.map { fav ->
-            CartItemUi(
-                id = fav.productId,
-                name = fav.name,
-                subtitle = fav.subtitle,
-                price = fav.price,
-                imageRes = fav.imageRes,
-                quantity = 1
-            )
-        }
-    }
+//    fun toCartItems(list: List<FavouriteItemUi>): List<CartItemUi> {
+//        return list.map { fav ->
+//            CartItemUi(
+//                id = fav.productId,
+//                name = fav.name,
+//                subtitle = fav.subtitle,
+//                price = fav.price,
+//                imageRes = fav.imageRes,
+//                quantity = 1
+//            )
+//        }
+//    }
 }
 
 /**
