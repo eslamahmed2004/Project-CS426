@@ -4,17 +4,17 @@ package com.example.project_cs426.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.project_cs426.data.remote.RetrofitClient
-import com.example.project_cs426.data.remote.model.CountryDto
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class LocationViewModel : ViewModel() {
 
-    private val _countries = MutableStateFlow<List<CountryDto>>(emptyList())
-    val countries: StateFlow<List<CountryDto>> = _countries
+    private val _uiState =
+        MutableStateFlow<LocationUiState>(LocationUiState.Loading)
+    val uiState: StateFlow<LocationUiState> = _uiState
 
-    val allowedCountries = listOf(
+    private val allowedCountries = listOf(
         "Egypt",
         "Saudi Arabia",
         "United Arab Emirates",
@@ -29,14 +29,22 @@ class LocationViewModel : ViewModel() {
 
     fun loadCountries() {
         viewModelScope.launch {
+            _uiState.value = LocationUiState.Loading
             try {
                 val response = RetrofitClient.api.getCountries()
-                _countries.value = response.data.filter {
+
+                val filtered = response.data.filter {
                     it.country in allowedCountries
                 }
+
+                _uiState.value = LocationUiState.Success(filtered)
+
             } catch (e: Exception) {
-                e.printStackTrace()
+                _uiState.value = LocationUiState.Error(
+                    message = "No internet connection. Please try again."
+                )
             }
         }
     }
 }
+

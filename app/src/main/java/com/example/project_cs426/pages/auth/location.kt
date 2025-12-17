@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -52,9 +53,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.project_cs426.R
 import com.example.project_cs426.data.local.LocationPreferences
 import com.example.project_cs426.navigation.Routes
+import com.example.project_cs426.viewmodel.LocationUiState
 import com.example.project_cs426.viewmodel.LocationViewModel
 import kotlinx.coroutines.launch
-
 
 @Composable
 fun location(
@@ -68,26 +69,19 @@ fun location(
 
     val context = LocalContext.current
     val locationPrefs = remember { LocationPreferences(context) }
+    val scope = rememberCoroutineScope()
 
-
-
-    // API DATA
-    val countries by viewModel.countries.collectAsState()
+    // UI STATE
+    val uiState by viewModel.uiState.collectAsState()
 
     // Load API once
     LaunchedEffect(Unit) {
         viewModel.loadCountries()
     }
 
-    // States
+    // Selected values
     var selectedCountry by remember { mutableStateOf("") }
     var selectedCity by remember { mutableStateOf("") }
-
-
-    val countryNames = countries.map { it.country }
-    val cities = countries
-        .firstOrNull { it.country == selectedCountry }
-        ?.cities ?: emptyList()
 
     Surface(modifier = Modifier.fillMaxSize(), color = bg) {
         Column(
@@ -98,6 +92,7 @@ fun location(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
+            //  Back
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -110,8 +105,9 @@ fun location(
                 Spacer(modifier = Modifier.weight(1f))
             }
 
-            Spacer(modifier = Modifier.height(75.dp))
+            Spacer(modifier = Modifier.height(60.dp))
 
+            //  Illustration
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -144,65 +140,94 @@ fun location(
                 text = "Switch on your location to stay in tune with what's happening in your area",
                 fontSize = 13.sp,
                 color = Color(0xFF7A7A7A),
-                modifier = Modifier.padding(horizontal = 12.dp),
                 lineHeight = 18.sp
             )
 
-            Spacer(modifier = Modifier.height(80.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
-            // Country
-            SimpleDropdown(
-                label = "Country",
-                value = if (selectedCountry.isEmpty()) "Select Country" else selectedCountry,
-                options = countryNames,
-                onSelect = {
-                    selectedCountry = it
-                    selectedCity = ""
+            //  API STATE HANDLING
+            when (uiState) {
+
+                is LocationUiState.Loading -> {
+                    CircularProgressIndicator()
                 }
-            )
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            //  City
-            SimpleDropdown(
-                label = "City",
-                value = if (selectedCity.isEmpty()) "Select City" else selectedCity,
-                options = cities,
-                onSelect = { selectedCity = it }
-            )
-
-            Spacer(modifier = Modifier.height(30.dp))
-            val scope = rememberCoroutineScope()
-
-            Button(
-                onClick = {
-                    if (selectedCountry.isEmpty() || selectedCity.isEmpty()) {
-                        locationError = true
-                    } else {
-
-                        locationError = false
-
-                        scope.launch {
-                            locationPrefs.saveLocation(selectedCountry, selectedCity)
-                        }
-                        navController.navigate(Routes.LOGIN)
+                is LocationUiState.Error -> {
+                    val message = (uiState as LocationUiState.Error).message
+                    Text(text = message, color = Color.Red)
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Button(onClick = { viewModel.loadCountries() }) {
+                        Text("Retry")
                     }
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF53B175)),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .clip(RoundedCornerShape(16.dp))
-            ) {
-                Text("Submit", color = Color.White, fontSize = 16.sp)
-            }
-            if (locationError) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Please select both country and city",
-                    color = Color.Red,
-                    fontSize = 12.sp
-                )
+                }
+
+                is LocationUiState.Success -> {
+
+                    val countries =
+                        (uiState as LocationUiState.Success).countries
+
+                    val countryNames = countries.map { it.country }
+
+                    val cities = countries
+                        .firstOrNull { it.country == selectedCountry }
+                        ?.cities ?: emptyList()
+
+                    // Country
+                    SimpleDropdown(
+                        label = "Country",
+                        value = if (selectedCountry.isEmpty()) "Select Country" else selectedCountry,
+                        options = countryNames,
+                        onSelect = {
+                            selectedCountry = it
+                            selectedCity = ""
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // City
+                    SimpleDropdown(
+                        label = "City",
+                        value = if (selectedCity.isEmpty()) "Select City" else selectedCity,
+                        options = cities,
+                        onSelect = { selectedCity = it }
+                    )
+
+                    Spacer(modifier = Modifier.height(30.dp))
+
+                    Button(
+                        onClick = {
+                            if (selectedCountry.isEmpty() || selectedCity.isEmpty()) {
+                                locationError = true
+                            } else {
+                                locationError = false
+                                scope.launch {
+                                    locationPrefs.saveLocation(
+                                        selectedCountry,
+                                        selectedCity
+                                    )
+                                }
+                                navController.navigate(Routes.LOGIN)
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF53B175)),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                    ) {
+                        Text("Submit", color = Color.White, fontSize = 16.sp)
+                    }
+
+                    if (locationError) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Please select both country and city",
+                            color = Color.Red,
+                            fontSize = 12.sp
+                        )
+                    }
+                }
             }
         }
     }

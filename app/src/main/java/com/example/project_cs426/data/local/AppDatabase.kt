@@ -16,6 +16,7 @@ import com.example.project_cs426.data.local.entity.UserEntity
         CategoryEntity::class,
         UserEntity::class],
     version = 2,
+
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
