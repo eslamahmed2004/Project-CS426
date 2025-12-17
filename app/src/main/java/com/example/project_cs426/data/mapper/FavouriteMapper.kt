@@ -8,7 +8,7 @@ fun FavouriteEntity.toUi(): FavouriteItemUi {
         uid = this.uid,
         productId = this.productId,
         name = this.name,
-        subtitle = this.subtitle ?: "", // fallback لو null
+        subtitle = this.subtitle ?: "", // fallback لو nul
         price = this.price,
         imageRes = this.imageRes ?: android.R.drawable.ic_menu_report_image // fallback للصورة
     )

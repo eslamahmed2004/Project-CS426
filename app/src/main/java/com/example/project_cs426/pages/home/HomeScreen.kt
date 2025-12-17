@@ -190,12 +190,17 @@ fun ShowSliderProducts(
                 items(categoryData.products.take(10)) { product ->
                     ProductBox(
                         product = product,
-                        onAddToCart = { viewModel.addToCart(it) }
+                        onAddToCart = { viewModel.addToCart(it) },
+                        onProductClick = { productId ->
+                            navController.navigate("productDetails/$productId")
+                        }
                     )
+
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
         }
+
     }
 }
 

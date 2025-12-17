@@ -27,22 +27,52 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.project_cs426.ui.theme.ProjectCS426Theme
-import com.example.project_cs426.model.FakeData
+import com.example.project_cs426.ui.theme.MatteGray
+
+import android.app.Application
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import com.example.project_cs426.data.local.AppDatabase
+import com.example.project_cs426.repository.CartRepository
+
+
+
+
 @Composable
 fun ProductDetailsScreen(
     navController: NavController,
     viewModel: ProductViewModel
 ) {
+
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    // اعمل CartRepository هنا مباشرة
+    val cartRepository = remember {
+        val db = AppDatabase.getInstance(context.applicationContext as Application)
+        CartRepository(db.cartDao())
+    }
+
     val product = viewModel.product
     val quantity = viewModel.quantity
     val isFavorite = viewModel.isFavorite
+    var isAdding by remember { mutableStateOf(false) }
 
     if (product == null) {
-        Text("Product not found")
+        Text(
+            "Product not found",
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth().padding(50.dp),
+            color = MatteGray,
+            style = MaterialTheme.typography.titleLarge
+        )
         return
     }
 
@@ -156,14 +186,45 @@ fun ProductDetailsScreen(
 
         Spacer(Modifier.weight(1f))
 
+
         Button(
-            onClick = { /* Add To Cart */ },
+            onClick = {
+                isAdding = true
+                scope.launch {
+                    repeat(quantity) {
+                        cartRepository.addToCart(
+                            productId = product.id,
+                            name = product.name,
+                            image = product.image,
+                            price = product.price
+                        )
+                    }
+                    delay(500)
+                    isAdding = false
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF53B175))
+                .padding(16.dp)
+                .height(67.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (isAdding) Color(0xFF4CAF50) else Color(0xFF53B175)
+            ),
+            enabled = !isAdding
         ) {
-            Text("Add To Basket", fontSize = 18.sp)
+            if (isAdding) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Text("Adding...", fontSize = 18.sp)
+                }
+            } else {
+                Text("Add To Basket", fontSize = 18.sp)
+            }
         }
     }
 }

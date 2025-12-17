@@ -2,7 +2,15 @@ package com.example.project_cs426.pages.product
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -27,10 +35,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.project_cs426.model.Product
 import com.example.project_cs426.ui.theme.Black
 import com.example.project_cs426.ui.theme.MatteGray
@@ -43,12 +49,14 @@ import kotlinx.coroutines.launch
 
 fun ProductBox(
     product: Product,
-    onAddToCart: (Product) -> Unit
+    onAddToCart: (Product) -> Unit,
+    onProductClick: (Int) -> Unit
 ) {
     var isAdding by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     Card(
+        onClick = {onProductClick(product.id)},
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(Color.Transparent),
         border = BorderStroke(1.dp, Silver),

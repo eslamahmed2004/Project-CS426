@@ -32,10 +32,8 @@ import androidx.navigation.NavController
 import com.example.project_cs426.R
 import com.example.project_cs426.data.local.AppDatabase
 import com.example.project_cs426.model.FakeData.categories
-import com.example.project_cs426.pages.product.ProductBox
 import com.example.project_cs426.repository.CartRepository
 import com.example.project_cs426.ui.theme.Black
-import com.example.project_cs426.ui.theme.MatteGray
 import com.example.project_cs426.viewmodel.HomeViewModel
 
 @Composable
@@ -103,13 +101,15 @@ fun ProductsByCategoryScreen(
                     ) {
                         ProductBox(
                             rowItems[0],
-                            onAddToCart = { viewModel.addToCart(it) }
+                            onAddToCart = { viewModel.addToCart(it) },
+                            onProductClick = {productId -> navController.navigate("productDetails/$productId")}
                         )
 
                         if (rowItems.size > 1) {
                             ProductBox(
                                 rowItems[1],
-                                onAddToCart = { viewModel.addToCart(it) }
+                                onAddToCart = { viewModel.addToCart(it) },
+                                onProductClick = {productId -> navController.navigate("productDetails/$productId")}
                             )
                         } else {
                             Spacer(modifier = Modifier.weight(1f))
