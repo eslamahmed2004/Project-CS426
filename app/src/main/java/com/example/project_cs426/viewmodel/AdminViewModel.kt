@@ -8,6 +8,7 @@ import com.example.project_cs426.data.local.dao.ProductDao
 import com.example.project_cs426.data.local.dao.UserDao
 import com.example.project_cs426.data.local.entity.CategoryEntity
 import com.example.project_cs426.data.local.entity.ProductEntity
+import com.example.project_cs426.data.local.entity.UserEntity
 import com.example.project_cs426.data.mapper.toEntity
 import com.example.project_cs426.data.mapper.toProduct
 import com.example.project_cs426.model.Product
@@ -64,6 +65,14 @@ class AdminViewModel(private val productDao: ProductDao,
                 emptyList()
             )
 
+
+    val users: StateFlow<List<UserEntity>> =
+        userDao.getAllUsers()
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000),
+                emptyList()
+            )
 
     // 🔹 عدد المستخدمين
     val userCount: StateFlow<Int> =
@@ -130,9 +139,6 @@ class AdminViewModel(private val productDao: ProductDao,
             )
         }
     }
-
-
-
 
 
 

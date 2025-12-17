@@ -30,6 +30,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.project_cs426.data.local.AppDatabase
+import com.example.project_cs426.data.local.entity.UserEntity
 import com.example.project_cs426.model.Product
 import com.example.project_cs426.model.ProductWithCategory
 import com.example.project_cs426.pages.admin.dialog.AddCategoryDialog
@@ -43,11 +44,13 @@ fun AdminDashboard(
     productCount: Int,
     userCount: Int,
     products: List<ProductWithCategory>,
+    users: List<UserEntity>,
     onAddCategory: () -> Unit,
     onAddProduct: () -> Unit,
     onDeleteProduct: (Int) -> Unit,
     onUpdateProduct: (Int) -> Unit
-) {
+)
+ {
 
     var showCategoryDialog by remember { mutableStateOf(false) }
 
@@ -97,15 +100,56 @@ fun AdminDashboard(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        LazyColumn {
-            items(products) { product ->
-                AdminProductItem(
-                    product = product,
-                    onDelete = { onDeleteProduct(product.id) },
-                    onEdit = { onUpdateProduct(product.id) }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+
+            // 🟩 PRODUCTS COLUMN
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "Products",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                LazyColumn {
+                    items(products) { product ->
+                        AdminProductItem(
+                            product = product,
+                            onDelete = { onDeleteProduct(product.id) },
+                            onEdit = { onUpdateProduct(product.id) }
+                        )
+                    }
+                }
+            }
+
+            // 🟦 USERS COLUMN
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "Registered Users",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                LazyColumn {
+                    items(users) { user ->
+                        AdminUserItem(user)
+                    }
+                }
             }
         }
+
     }
 }
 
@@ -185,19 +229,21 @@ fun AdminDashboardRoute(
     }
 
     // 🧠 UI
+    val users by viewModel.users.collectAsState()
+
     AdminDashboard(
         productCount = productCount.value,
         userCount = userCount.value,
         products = products.value,
+        users = users,
         onAddCategory = { showCategoryDialog = true },
         onAddProduct = { showDialog = true },
         onDeleteProduct = { productId ->
             viewModel.deleteProductById(productId)
         },
-        onUpdateProduct = { productId ->
-            // لاحقًا نجيب المنتج ونعمله Edit
-        }
+        onUpdateProduct = { }
     )
+
 
 
 }

@@ -14,6 +14,9 @@ interface UserDao {
     @Query("SELECT COUNT(*) FROM users")
     fun getUserCount(): Flow<Int>
 
+    @Query("SELECT * FROM users")
+    fun getAllUsers(): Flow<List<UserEntity>>
+
     //  Register
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertUser(user: UserEntity)
