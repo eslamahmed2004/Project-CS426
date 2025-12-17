@@ -112,13 +112,15 @@ fun ProductsBySearchScreen(
                     ) {
                         ProductBox(
                             rowItem[0],
-                            onAddToCart = { viewModel.addToCart(it) }
+                            onAddToCart = { viewModel.addToCart(it) },
+                            onProductClick = {productId -> navController.navigate("productDetails/$productId")}
 
                         )
                         if (rowItem.size > 1) {
                             ProductBox(
                                 rowItem[1],
-                                onAddToCart = { viewModel.addToCart(it) }
+                                onAddToCart = { viewModel.addToCart(it) },
+                                onProductClick = {productId -> navController.navigate("productDetails/$productId")}
                             )
                         } else {
                             Spacer(modifier = Modifier.weight(1f))

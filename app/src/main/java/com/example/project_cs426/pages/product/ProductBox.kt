@@ -43,12 +43,14 @@ import kotlinx.coroutines.launch
 
 fun ProductBox(
     product: Product,
-    onAddToCart: (Product) -> Unit
+    onAddToCart: (Product) -> Unit,
+    onProductClick: (Int) -> Unit
 ) {
     var isAdding by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     Card(
+        onClick = {onProductClick(product.id)},
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(Color.Transparent),
         border = BorderStroke(1.dp, Silver),

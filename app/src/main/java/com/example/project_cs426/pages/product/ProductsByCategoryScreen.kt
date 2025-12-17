@@ -103,13 +103,15 @@ fun ProductsByCategoryScreen(
                     ) {
                         ProductBox(
                             rowItems[0],
-                            onAddToCart = { viewModel.addToCart(it) }
+                            onAddToCart = { viewModel.addToCart(it) },
+                            onProductClick = {productId -> navController.navigate("productDetails/$productId")}
                         )
 
                         if (rowItems.size > 1) {
                             ProductBox(
                                 rowItems[1],
-                                onAddToCart = { viewModel.addToCart(it) }
+                                onAddToCart = { viewModel.addToCart(it) },
+                                onProductClick = {productId -> navController.navigate("productDetails/$productId")}
                             )
                         } else {
                             Spacer(modifier = Modifier.weight(1f))

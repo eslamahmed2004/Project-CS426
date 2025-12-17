@@ -97,6 +97,26 @@ fun AppNavGraph(navController: NavHostController) {
         }
 
 
+        composable(
+            route = Routes.PRODUCT_DETAILS,
+            arguments = listOf(
+                navArgument("productId") {
+                    type = NavType.IntType
+                }
+            )
+        ) { backStackEntry ->
+            val productId = backStackEntry.arguments?.getInt("productId") ?: 0
+
+            val viewModel: ProductViewModel = viewModel()
+            viewModel.loadProduct(productId)
+
+            ProductDetailsScreen(
+                navController = navController,
+                viewModel = viewModel
+            )
+        }
+
+
 //        composable(Routes.FAVORITE) {
 //            Favourite { navController.navigate(it) }
 //        }
